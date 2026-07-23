@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TFY</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<!-- CREATE POST POPUP -->
+
+<div id="postPopup" class="popup">
+
+
+<div class="popup-box">
+
+
+<h2>Create Post</h2>
+
+
+<div class="post-types">
+
+
+<button onclick="selectType('🏋 Workout')">
+🏋 Workout
+</button>
+
+
+<button onclick="selectType('📈 Progress')">
+📈 Progress
+</button>
+
+
+<button onclick="selectType('🏆 Achievement')">
+🏆 Achievement
+</button>
+
+
+</div>
+
+
+
+<input 
+id="postCaption"
+placeholder="Share your progress..."
+>
+
+
+<!-- VIDEO UPLOAD -->
+
+<input
+type="file"
+id="videoUpload"
+accept="video/*"
+>
+
+
+
+<button onclick="createPost()">
+
+Post
+
+</button>
+
+
+
+<button onclick="closePost()" class="cancel">
+
+Cancel
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="app">
+
+
+
+<header>
+
+<h1>TFY</h1>
+
+<div class="icons">
+
+</div>
+
+</header>
+
+
+
+
+
+<nav class="tabs">
+
+
+<button onclick="openPage('home')" id="homeTab">
+HOME
+</button>
+
+
+<button onclick="openPage('feed')" id="feedTab">
+FEED
+</button>
+
+
+<button onclick="openPage('rank')" id="rankTab">
+RANK
+</button>
+
+
+<button onclick="openPage('profile')" id="profileTab">
+PROFILE
+</button>
+
+
+</nav>
+
+
+
+
+
+
+<main>
+
+
+
+
+
+<!-- HOME -->
+
+<section id="home" class="page active">
+
+
+<h2>Today's Mission</h2>
+
+
+
+<div class="hero card">
+
+
+<p class="level">
+LEVEL 1
+</p>
+
+
+<h3>
+Upper Body Power
+</h3>
+
+
+
+<div class="exercise">
+
+Push Ups
+
+<span>
+30
+</span>
+
+</div>
+
+
+
+
+<div class="exercise">
+
+Dips
+
+<span>
+20
+</span>
+
+</div>
+
+
+
+
+<div class="exercise">
+
+Core
+
+<span>
+50
+</span>
+
+</div>
+
+
+
+<button onclick="completeWorkout()">
+
+COMPLETE
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="stats">
+
+
+<div>
+
+<h3 id="xp">
+0
+</h3>
+
+<p>XP</p>
+
+</div>
+
+
+
+<div>
+
+<h3 id="streak">
+0
+</h3>
+
+<p>STREAK</p>
+
+</div>
+
+
+
+<div>
+
+<h3 id="level">
+1
+</h3>
+
+<p>LEVEL</p>
+
+</div>
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- FEED -->
+
+
+<section id="feed" class="page">
+
+
+<div id="videoFeed">
+
+
+</div>
+
+
+</section>
+
+
+<h2>Community</h2>
+
+
+
+<button class="create" onclick="openPost()">
+
++
+Create Post
+
+</button>
+
+
+
+
+
+<div id="posts">
+
+
+<!-- POSTS LOAD HERE -->
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- RANK -->
+
+
+<section id="rank" class="page">
+
+
+<h2>Global Rank</h2>
+
+
+
+
+<div class="card rank">
+
+🥇 Alex
+
+<br>
+
+5000 XP
+
+</div>
+
+
+
+<div class="card rank">
+
+🥈 Mike
+
+<br>
+
+4200 XP
+
+</div>
+
+
+
+<div class="card rank">
+
+🥉 Ethan
+
+<br>
+
+3500 XP
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- PROFILE -->
+
+
+<section id="profile" class="page">
+
+
+<h2>Profile</h2>
+
+
+
+<div class="card">
+
+
+<h3>
+Ethan
+</h3>
+
+
+<p>
+
+Level 
+
+<span id="profileLevel">
+1
+</span>
+
+</p>
+
+
+<p>
+Followers 0
+</p>
+
+
+<p>
+Following 0
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="card">
+
+
+<h3>
+Achievements
+</h3>
+
+
+
+<p>
+🏁 First Workout
+</p>
+
+
+
+<p>
+🔥 7 Day Streak
+</p>
+
+
+
+<p>
+🏆 Level 10
+</p>
+
+
+
+</div>
+
+
+
+
+</section>
+
+
+
+
+
+
+
+</main>
+
+
+</div>
+
+
+
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>
