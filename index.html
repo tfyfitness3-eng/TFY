@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>TFY</title>
+<meta charset="UTF-8">
 
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TFY | Think For Yourself</title>
+
+<link rel="stylesheet" href="./style.css">
 
 </head>
 
@@ -14,7 +17,43 @@
 <body>
 
 
-<!-- CREATE POST POPUP -->
+<!-- AUTH POPUP -->
+
+<div id="authPopup" class="popup">
+
+<div class="popup-box">
+
+<h2>
+Join TFY
+</h2>
+
+
+<input id="signupName" type="text" placeholder="Username">
+
+<input id="signupEmail" type="email" placeholder="Email">
+
+<input id="signupPassword" type="password" placeholder="Password">
+
+
+<button onclick="signup()">
+CREATE ACCOUNT
+</button>
+
+
+<button onclick="login()">
+LOGIN
+</button>
+
+
+</div>
+
+</div>
+
+
+
+
+<!-- POST POPUP -->
+
 
 <div id="postPopup" class="popup">
 
@@ -22,67 +61,41 @@
 <div class="popup-box">
 
 
-<h2>Create Post</h2>
+<h2>
+Create Post
+</h2>
 
 
-<div class="post-types">
-
-
-<button onclick="selectType('🏋 Workout')">
-🏋 Workout
-</button>
-
-
-<button onclick="selectType('📈 Progress')">
-📈 Progress
-</button>
-
-
-<button onclick="selectType('🏆 Achievement')">
-🏆 Achievement
-</button>
-
-
-</div>
-
-
-
-<input 
+<input
 id="postCaption"
+type="text"
 placeholder="Share your progress..."
 >
 
 
-<!-- VIDEO UPLOAD -->
-
 <input
-type="file"
 id="videoUpload"
+type="file"
 accept="video/*"
 >
 
 
-
 <button onclick="createPost()">
-
-Post
-
+POST
 </button>
-
 
 
 <button onclick="closePost()" class="cancel">
-
-Cancel
-
+CANCEL
 </button>
 
 
-
 </div>
 
 
 </div>
+
+
 
 
 
@@ -94,9 +107,17 @@ Cancel
 
 <header>
 
-<h1>TFY</h1>
+<div>
 
-<div class="icons">
+<h1>
+TFY
+</h1>
+
+
+<p>
+THINK FOR YOURSELF
+</p>
+
 
 </div>
 
@@ -109,22 +130,22 @@ Cancel
 <nav class="tabs">
 
 
-<button onclick="openPage('home')" id="homeTab">
+<button id="homeTab" onclick="openPage('home')">
 HOME
 </button>
 
 
-<button onclick="openPage('feed')" id="feedTab">
+<button id="feedTab" onclick="openPage('feed')">
 FEED
 </button>
 
 
-<button onclick="openPage('rank')" id="rankTab">
+<button id="rankTab" onclick="openPage('rank')">
 RANK
 </button>
 
 
-<button onclick="openPage('profile')" id="profileTab">
+<button id="profileTab" onclick="openPage('profile')">
 PROFILE
 </button>
 
@@ -144,23 +165,21 @@ PROFILE
 
 <!-- HOME -->
 
-<section id="home" class="page active">
-
-
-<h2>Today's Mission</h2>
+<section id="home" class="page">
 
 
 
-<div class="hero card">
+<h2>
+Dashboard
+</h2>
 
 
-<p class="level">
-LEVEL 1
-</p>
+
+<div class="card">
 
 
 <h3>
-Upper Body Power
+Daily Challenge
 </h3>
 
 
@@ -169,12 +188,11 @@ Upper Body Power
 
 Push Ups
 
-<span>
-30
-</span>
+<b>
+20
+</b>
 
 </div>
-
 
 
 
@@ -182,24 +200,24 @@ Push Ups
 
 Dips
 
-<span>
-20
-</span>
+<b>
+5
+</b>
 
 </div>
-
 
 
 
 <div class="exercise">
 
-Core
+Sit Ups
 
-<span>
-50
-</span>
+<b>
+20
+</b>
 
 </div>
+
 
 
 
@@ -208,7 +226,6 @@ Core
 COMPLETE
 
 </button>
-
 
 
 </div>
@@ -227,7 +244,9 @@ COMPLETE
 0
 </h3>
 
-<p>XP</p>
+<p>
+XP
+</p>
 
 </div>
 
@@ -239,7 +258,9 @@ COMPLETE
 0
 </h3>
 
-<p>STREAK</p>
+<p>
+STREAK
+</p>
 
 </div>
 
@@ -247,13 +268,59 @@ COMPLETE
 
 <div>
 
-<h3 id="level">
+<h3 id="homeLevel">
 1
 </h3>
 
-<p>LEVEL</p>
+<p>
+LEVEL
+</p>
 
 </div>
+
+
+</div>
+
+
+
+
+
+
+<div class="card social-card">
+
+
+<h3>
+Join The TFY Community
+</h3>
+
+
+<p>
+Progress • Challenges • Growth
+</p>
+
+
+
+<a
+href="https://instagram.com/TFYFitness"
+target="_blank"
+class="social-link">
+
+Instagram @TFYFitness
+
+</a>
+
+
+
+
+<a
+href="https://www.tiktok.com/@TFYFitness"
+target="_blank"
+class="social-link">
+
+TikTok @TFYFitness
+
+</a>
+
 
 
 </div>
@@ -261,6 +328,7 @@ COMPLETE
 
 
 </section>
+
 
 
 
@@ -275,42 +343,30 @@ COMPLETE
 <section id="feed" class="page">
 
 
-<div id="videoFeed">
-
-
-</div>
-
-
-</section>
-
-
-<h2>Community</h2>
+<h2>
+Community
+</h2>
 
 
 
 <button class="create" onclick="openPost()">
 
-+
-Create Post
++ CREATE POST
 
 </button>
 
 
 
-
-
-<div id="posts">
-
-
-<!-- POSTS LOAD HERE -->
-
-
+<div id="videoFeed">
 
 </div>
 
 
 
 </section>
+
+
+
 
 
 
@@ -325,48 +381,24 @@ Create Post
 <section id="rank" class="page">
 
 
-<h2>Global Rank</h2>
+<h2>
+Global Rank
+</h2>
 
 
 
 
-<div class="card rank">
+<div id="leaderboard">
 
-🥇 Alex
-
-<br>
-
-5000 XP
-
-</div>
-
-
-
-<div class="card rank">
-
-🥈 Mike
-
-<br>
-
-4200 XP
-
-</div>
-
-
-
-<div class="card rank">
-
-🥉 Ethan
-
-<br>
-
-3500 XP
 
 </div>
 
 
 
 </section>
+
+
+
 
 
 
@@ -382,41 +414,141 @@ Create Post
 <section id="profile" class="page">
 
 
-<h2>Profile</h2>
+<h2>
+Profile
+</h2>
 
 
 
-<div class="card">
+
+<div class="card profile-card">
 
 
-<h3>
-Ethan
+
+<img
+id="profileImage"
+class="profile-picture"
+src="https://placehold.co/180x180?text=TFY"
+alt="Profile"
+>
+
+
+
+
+<input
+id="profileUpload"
+type="file"
+accept="image/*"
+hidden
+>
+
+
+
+
+<button
+class="edit-picture"
+onclick="document.getElementById('profileUpload').click()"
+>
+
+📷 Change Picture
+
+</button>
+
+
+
+
+
+<h2 id="username">
+
+Guest
+
+</h2>
+
+
+
+
+
+<textarea
+id="bioInput"
+maxlength="150"
+placeholder="Tell the community about yourself..."
+></textarea>
+
+
+
+
+
+
+<button
+class="saveProfile"
+onclick="updateProfile()"
+>
+
+SAVE PROFILE
+
+</button>
+
+
+
+
+
+
+
+
+<div class="profile-stats">
+
+
+<div>
+
+<h3 id="profileLevel">
+1
 </h3>
 
-
 <p>
-
-Level 
-
-<span id="profileLevel">
-1
-</span>
-
+LEVEL
 </p>
 
+</div>
+
+
+
+
+<div>
+
+<h3 id="profileXP">
+0
+</h3>
 
 <p>
-Followers 0
+XP
 </p>
 
+</div>
+
+
+
+
+<div>
+
+<h3 id="profileStreak">
+0
+</h3>
 
 <p>
-Following 0
+STREAK
 </p>
+
+</div>
 
 
 
 </div>
+
+
+
+</div>
+
+
 
 
 
@@ -432,22 +564,11 @@ Achievements
 
 
 
-<p>
-🏁 First Workout
-</p>
+<div id="achievements">
 
+No achievements yet.
 
-
-<p>
-🔥 7 Day Streak
-</p>
-
-
-
-<p>
-🏆 Level 10
-</p>
-
+</div>
 
 
 </div>
@@ -455,9 +576,8 @@ Achievements
 
 
 
+
 </section>
-
-
 
 
 
@@ -472,7 +592,9 @@ Achievements
 
 
 
-<script src="script.js"></script>
+
+
+<script type="module" src="./script.js"></script>
 
 
 </body>
