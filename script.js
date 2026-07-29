@@ -1,13 +1,59 @@
 // ============================
-// TFY DATA SYSTEM
+// FIREBASE IMPORTS
 // ============================
 
+import { auth, db, storage } from "./firebase.js";
 
-let player = JSON.parse(
-localStorage.getItem("TFYplayer")
-) || {
+import {
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+onAuthStateChanged,
+signOut
+}
+from
+"https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
-name:"Ethan",
+
+import {
+doc,
+setDoc,
+getDoc,
+collection,
+query,
+orderBy,
+limit,
+getDocs
+}
+from
+"https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+
+import {
+ref,
+uploadBytes,
+getDownloadURL
+}
+from
+"https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+
+
+
+// ============================
+// GLOBAL STATE
+// ============================
+
+let currentUser = null;
+
+
+let player = {
+
+username:"Guest",
+
+name:"Guest",
+
+bio:"",
+
+profilePic:"",
 
 xp:0,
 
@@ -15,19 +61,445 @@ level:1,
 
 streak:0,
 
-lastWorkout:null
+lastWorkout:null,
+
+totalWorkouts:0,
+
+followers:[],
+
+following:[]
 
 };
 
 
 
-let posts = JSON.parse(
-localStorage.getItem("TFYposts")
-) || [];
+// ============================
+// AUTH LISTENER
+// ============================
+
+
+onAuthStateChanged(auth, async(user)=>{
+
+
+if(user){
+
+currentUser=user;
+
+await loadProfile();
+
+document.getElementById("authPopup").style.display="none";
+
+
+}else{
+
+
+currentUser=null;
+
+
+}
+
+
+updateUI();
+
+loadLeaderboard();
+
+
+});
 
 
 
-let selectedType = "";
+
+// ============================
+// SIGN UP
+// ============================
+
+
+async function signup(){
+
+
+const username =
+document.getElementById("signupName").value;
+
+
+const email =
+document.getElementById("signupEmail").value;
+
+
+const password =
+document.getElementById("signupPassword").value;
+
+
+
+if(!username || !email || !password){
+
+alert("Fill everything");
+
+return;
+
+}
+
+
+
+try{
+
+
+const result =
+await createUserWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+
+
+const user=result.user;
+
+
+
+await setDoc(
+doc(db,"users",user.uid),
+{
+
+username,
+
+name:username,
+
+bio:"",
+
+profilePic:"",
+
+xp:0,
+
+level:1,
+
+streak:0,
+
+lastWorkout:null,
+
+totalWorkouts:0,
+
+followers:[],
+
+following:[],
+
+createdAt:Date.now()
+
+}
+
+);
+
+
+
+alert("Welcome to TFY 🔥");
+
+
+}
+
+catch(error){
+
+alert(error.message);
+
+}
+
+
+}
+
+
+
+
+// ============================
+// LOGIN
+// ============================
+
+
+async function login(){
+
+
+const email =
+document.getElementById("signupEmail").value;
+
+
+const password =
+document.getElementById("signupPassword").value;
+
+
+
+try{
+
+
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+
+}
+
+catch(error){
+
+alert(error.message);
+
+}
+
+
+}
+
+
+
+
+// ============================
+// LOGOUT
+// ============================
+
+
+function logout(){
+
+signOut(auth);
+
+}
+
+
+
+
+// ============================
+// PROFILE LOAD
+// ============================
+
+
+async function loadProfile(){
+
+
+if(!currentUser)return;
+
+
+
+const snap =
+await getDoc(
+doc(db,"users",currentUser.uid)
+);
+
+
+
+if(snap.exists()){
+
+
+player={
+
+...player,
+
+...snap.data()
+
+};
+
+
+}
+
+
+
+}
+
+
+
+// ============================
+// SAVE PROFILE
+// ============================
+
+
+async function saveProfile(){
+
+
+if(!currentUser)return;
+
+
+await setDoc(
+
+doc(db,"users",currentUser.uid),
+
+player,
+
+{
+merge:true
+}
+
+);
+
+
+}
+
+
+
+// ============================
+// PROFILE UPDATE
+// ============================
+
+
+async function updateProfile(){
+
+
+if(!currentUser){
+
+alert("Login first");
+
+return;
+
+}
+
+
+
+const bio =
+document.getElementById("bioInput");
+
+
+
+if(bio){
+
+player.bio=bio.value;
+
+}
+
+
+
+const file =
+document.getElementById("profileUpload").files[0];
+
+
+
+if(file){
+
+
+const imageRef =
+ref(
+storage,
+"profilePictures/"+currentUser.uid
+);
+
+
+
+await uploadBytes(
+imageRef,
+file
+);
+
+
+
+player.profilePic =
+await getDownloadURL(imageRef);
+
+
+}
+
+
+
+await saveProfile();
+
+
+updateUI();
+
+
+alert("Profile Saved 🔥");
+
+
+}
+
+
+
+// ============================
+// UI UPDATE
+// ============================
+
+
+function updateUI(){
+
+
+
+document.querySelectorAll("#username")
+.forEach(el=>{
+
+el.innerText=player.username;
+
+});
+
+
+
+document.querySelectorAll("#xp")
+.forEach(el=>{
+
+el.innerText=player.xp;
+
+});
+
+
+
+document.querySelectorAll("#profileXP")
+.forEach(el=>{
+
+el.innerText=player.xp;
+
+});
+
+
+
+document.querySelectorAll("#profileLevel")
+.forEach(el=>{
+
+el.innerText=player.level;
+
+});
+
+
+
+document.querySelectorAll("#homeLevel")
+.forEach(el=>{
+
+el.innerText=player.level;
+
+});
+
+
+
+document.querySelectorAll("#streak")
+.forEach(el=>{
+
+el.innerText=player.streak;
+
+});
+
+
+
+document.querySelectorAll("#profileStreak")
+.forEach(el=>{
+
+el.innerText=player.streak;
+
+});
+
+
+
+const bio =
+document.getElementById("bioInput");
+
+
+if(bio){
+
+bio.value=player.bio || "";
+
+}
+
+
+
+const img =
+document.getElementById("profileImage");
+
+
+if(img && player.profilePic){
+
+img.src=player.profilePic;
+
+}
+
+
+}
 
 
 
@@ -41,30 +513,36 @@ function openPage(page){
 
 
 document.querySelectorAll(".page")
-.forEach(function(p){
+.forEach(section=>{
 
-p.classList.remove("active");
+section.classList.remove("active");
 
 });
 
 
 
-document
-.getElementById(page)
-.classList.add("active");
+const selected =
+document.getElementById(page);
+
+
+if(selected){
+
+selected.classList.add("active");
+
+}
 
 
 
 document.querySelectorAll(".tabs button")
-.forEach(function(tab){
+.forEach(btn=>{
 
-tab.classList.remove("active");
+btn.classList.remove("active");
 
 });
 
 
 
-let tab =
+const tab =
 document.getElementById(page+"Tab");
 
 
@@ -80,54 +558,27 @@ tab.classList.add("active");
 
 
 
-
-
 // ============================
-// WORKOUT SYSTEM
+// XP SYSTEM
 // ============================
 
 
-function completeWorkout(){
+function addXP(amount){
 
 
-let today =
-new Date().toDateString();
-
-
-
-if(player.lastWorkout === today){
-
-alert("Today's mission is already complete 🔥");
-
-return;
-
-}
-
-
-
-player.xp +=50;
-
-player.streak++;
-
-player.lastWorkout=today;
+player.xp += amount;
 
 
 checkLevel();
 
-savePlayer();
 
-update();
-
+saveProfile();
 
 
-alert("+50 XP Earned 💪");
+updateUI();
 
 
 }
-
-
-
-
 
 
 
@@ -139,110 +590,60 @@ player.level * 100;
 
 
 
-if(player.xp >= needed){
+while(player.xp >= needed){
 
 
 player.xp -= needed;
+
 
 player.level++;
 
 
 alert(
-"LEVEL UP 🔥 Level "
-+player.level
+"LEVEL UP 🔥 Level "+player.level
 );
 
 
-}
+needed =
+player.level * 100;
 
 
 }
 
 
-
-
-
-
-function savePlayer(){
-
-
-localStorage.setItem(
-
-"TFYplayer",
-
-JSON.stringify(player)
-
-);
-
-
 }
-
-
-
 
 
 
 
 // ============================
-// CREATE POST
+// DAILY WORKOUT
 // ============================
 
 
-function openPost(){
+async function completeWorkout(){
 
 
-document.getElementById("postPopup")
-.style.display="flex";
+if(!currentUser){
 
 
-}
+document.getElementById("authPopup").style.display="flex";
 
-
-
-function closePost(){
-
-
-document.getElementById("postPopup")
-.style.display="none";
+return;
 
 
 }
 
 
 
-
-function selectType(type){
-
-
-selectedType=type;
-
-
-}
+let today =
+new Date().toDateString();
 
 
 
+if(player.lastWorkout===today){
 
-
-
-function createPost(){
-
-
-
-let caption =
-document.getElementById("postCaption")
-.value;
-
-
-
-let video =
-document.getElementById("videoUpload")
-.files[0];
-
-
-
-if(!video){
-
-alert("Upload a workout video 🔥");
+alert("Already completed today 💪");
 
 return;
 
@@ -250,62 +651,18 @@ return;
 
 
 
-let videoURL =
-URL.createObjectURL(video);
+player.lastWorkout=today;
+
+player.streak++;
+
+player.totalWorkouts++;
+
+
+addXP(50);
 
 
 
-
-let newPost={
-
-
-id:Date.now(),
-
-
-user:player.name,
-
-
-type:selectedType || "🏋 Workout",
-
-
-caption:caption,
-
-
-video:videoURL,
-
-
-likes:0,
-
-
-comments:[]
-
-
-};
-
-
-
-
-posts.unshift(newPost);
-
-
-
-savePosts();
-
-
-displayPosts();
-
-
-
-document.getElementById("postCaption")
-.value="";
-
-
-document.getElementById("videoUpload")
-.value="";
-
-
-
-closePost();
+alert("+50 XP Earned 🔥");
 
 
 }
@@ -314,156 +671,81 @@ closePost();
 
 
 
-
-
-
 // ============================
-// SAVE POSTS
+// LEADERBOARD
 // ============================
 
 
-function savePosts(){
+async function loadLeaderboard(){
 
 
-localStorage.setItem(
+const board =
+document.getElementById("leaderboard");
 
-"TFYposts",
 
-JSON.stringify(posts)
+
+if(!board)return;
+
+
+
+try{
+
+
+const q=query(
+
+collection(db,"users"),
+
+orderBy(
+"xp",
+"desc"
+),
+
+limit(10)
 
 );
 
 
-}
 
+const snap =
+await getDocs(q);
 
 
 
+board.innerHTML="";
 
 
 
-// ============================
-// TIKTOK STYLE FEED
-// ============================
+let rank=1;
 
 
-function displayPosts(){
 
+snap.forEach(user=>{
 
 
-let feed =
-document.getElementById("videoFeed");
+const data=user.data();
 
 
 
-if(!feed)return;
+board.innerHTML += `
 
+<div class="card rank">
 
-
-feed.innerHTML="";
-
-
-
-
-
-posts.forEach(function(post){
-
-
-
-let div =
-document.createElement("div");
-
-
-
-div.className="video-post";
-
-
-
-div.innerHTML=`
-
-
-<video
-
-src="${post.video}"
-
-loop
-
-playsinline
-
-onclick="toggleVideo(this)">
-
-</video>
-
-
-
-
-<div class="video-info">
-
-
-<h3>
-
-🔥 ${post.user}
-
-</h3>
-
-
-<p>
-
-${post.type}
-
-</p>
-
-
-<p>
-
-${post.caption}
-
-</p>
-
-
-
-</div>
-
-
-
-
-<div class="video-actions">
-
-
-
-<button onclick="likePost(${post.id})">
-
-❤️
+🏆 #${rank}
 
 <br>
 
-${post.likes}
-
-</button>
-
-
-
-<button onclick="commentPost(${post.id})">
-
-💬
+<b>${data.username}</b>
 
 <br>
 
-${post.comments.length}
-
-</button>
-
-
+${data.xp} XP
 
 </div>
-
 
 `;
 
 
-
-feed.appendChild(div);
-
+rank++;
 
 
 });
@@ -472,119 +754,9 @@ feed.appendChild(div);
 
 }
 
+catch(error){
 
-
-
-// ============================
-// VIDEO CONTROLS
-// ============================
-
-
-function toggleVideo(video){
-
-
-if(video.paused){
-
-video.play();
-
-}
-
-else{
-
-video.pause();
-
-}
-
-
-}
-
-
-
-
-
-
-
-
-// ============================
-// LIKES
-// ============================
-
-
-function likePost(id){
-
-
-
-let post =
-posts.find(function(p){
-
-return p.id===id;
-
-});
-
-
-
-if(post){
-
-
-post.likes++;
-
-
-savePosts();
-
-
-displayPosts();
-
-
-}
-
-
-}
-
-
-
-
-
-
-
-// ============================
-// COMMENTS
-// ============================
-
-
-function commentPost(id){
-
-
-let text =
-prompt("Write a comment:");
-
-
-
-if(!text)return;
-
-
-
-let post =
-posts.find(function(p){
-
-return p.id===id;
-
-});
-
-
-
-if(post){
-
-
-post.comments.push(text);
-
-
-
-savePosts();
-
-
-
-displayPosts();
-
+console.log(error);
 
 }
 
@@ -595,64 +767,64 @@ displayPosts();
 
 
 
-
-
-
 // ============================
-// UPDATE DISPLAY
+// POST SYSTEM PLACEHOLDERS
 // ============================
 
 
-function update(){
+function openPost(){
 
-
-document.getElementById("xp")
-.innerHTML =
-player.xp;
-
-
-
-document.getElementById("level")
-.innerHTML =
-player.level;
-
-
-
-document.getElementById("streak")
-.innerHTML =
-player.streak;
-
-
-
-let profile =
-document.getElementById("profileLevel");
-
-
-
-if(profile){
-
-profile.innerHTML =
-player.level;
+document.getElementById("postPopup").style.display="flex";
 
 }
+
+
+function closePost(){
+
+document.getElementById("postPopup").style.display="none";
+
+}
+
+
+
+async function createPost(){
+
+
+alert("Video posting system next: Firestore + Storage");
 
 
 }
 
 
 
-
-
-
 // ============================
-// START
+// START APP
 // ============================
-
-
-displayPosts();
-
-
-update();
 
 
 openPage("home");
+
+
+
+// ============================
+// GLOBAL BUTTON CONNECTIONS
+// ============================
+
+
+window.signup=signup;
+
+window.login=login;
+
+window.logout=logout;
+
+window.openPage=openPage;
+
+window.completeWorkout=completeWorkout;
+
+window.updateProfile=updateProfile;
+
+window.openPost=openPost;
+
+window.closePost=closePost;
+
+window.createPost=createPost;
