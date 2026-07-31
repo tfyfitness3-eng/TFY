@@ -9,7 +9,7 @@
 
 <title>TFY | Think For Yourself</title>
 
-<link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -17,22 +17,37 @@
 <body>
 
 
-<!-- AUTH POPUP -->
+<!-- =========================
+AUTH POPUP
+========================= -->
+
 
 <div id="authPopup" class="popup">
 
 <div class="popup-box">
 
-<h2>
-Join TFY
-</h2>
+<h2>Join TFY</h2>
 
 
-<input id="signupName" type="text" placeholder="Username">
+<input 
+id="signupName"
+type="text"
+placeholder="Username"
+>
 
-<input id="signupEmail" type="email" placeholder="Email">
 
-<input id="signupPassword" type="password" placeholder="Password">
+<input 
+id="signupEmail"
+type="email"
+placeholder="Email"
+>
+
+
+<input 
+id="signupPassword"
+type="password"
+placeholder="Password"
+>
 
 
 <button onclick="signup()">
@@ -52,18 +67,35 @@ LOGIN
 
 
 
-<!-- POST POPUP -->
+
+<!-- =========================
+CREATE POST POPUP
+========================= -->
 
 
 <div id="postPopup" class="popup">
 
-
 <div class="popup-box">
 
 
-<h2>
-Create Post
-</h2>
+<h2>Create Post</h2>
+
+
+<select id="postType">
+
+<option>
+Workout
+</option>
+
+<option>
+Progress
+</option>
+
+<option>
+Achievement
+</option>
+
+</select>
 
 
 <input
@@ -85,14 +117,13 @@ POST
 </button>
 
 
-<button onclick="closePost()" class="cancel">
+<button onclick="closePost()">
 CANCEL
 </button>
 
 
 </div>
 
-
 </div>
 
 
@@ -101,11 +132,19 @@ CANCEL
 
 
 
+<!-- =========================
+APP
+========================= -->
+
+
 <div class="app">
 
 
 
+
+
 <header>
+
 
 <div>
 
@@ -121,36 +160,65 @@ THINK FOR YOURSELF
 
 </div>
 
+
 </header>
 
 
 
 
 
+
+
+<!-- =========================
+NAVIGATION
+========================= -->
+
+
 <nav class="tabs">
 
 
-<button id="homeTab" onclick="openPage('home')">
+<button 
+id="homeTab"
+onclick="openPage('home')">
+
 HOME
+
 </button>
 
 
-<button id="feedTab" onclick="openPage('feed')">
+
+<button 
+id="feedTab"
+onclick="openPage('feed')">
+
 FEED
+
 </button>
 
 
-<button id="rankTab" onclick="openPage('rank')">
+
+<button 
+id="rankTab"
+onclick="openPage('rank')">
+
 RANK
+
 </button>
 
 
-<button id="profileTab" onclick="openPage('profile')">
+
+<button 
+id="profileTab"
+onclick="openPage('profile')">
+
 PROFILE
+
 </button>
 
 
 </nav>
+
+
 
 
 
@@ -163,10 +231,37 @@ PROFILE
 
 
 
-<!-- HOME -->
+
+<!-- =========================
+HOME DASHBOARD
+========================= -->
+
 
 <section id="home" class="page">
+ <div id="guestScreen">
 
+
+ 
+
+
+<h1>
+Think For Yourself 
+</h1>
+
+
+<p>
+Complete your first challenge.<br>
+Post your first workout.<br>
+Climb the leaderboard.
+</p>
+
+ <button onclick="document.getElementById('authPopup').style.display='flex'">
+    Get Started
+  </button>
+
+</div>
+
+ 
 
 
 <h2>
@@ -175,13 +270,131 @@ Dashboard
 
 
 
+<div class="card welcome-card">
+
+
+<h3>
+Welcome back,
+<span id="homeUsername">
+Guest
+</span>
+</h3>
+
+
+<p>
+No brainrot - Build yourself.
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- PLAYER STATS -->
+
+
+<div class="stats">
+
+
+<div>
+
+<h3 id="xp">
+0
+</h3>
+
+<p>
+XP
+</p>
+
+</div>
+
+
+
+<div>
+
+<h3 id="homeLevel">
+1
+</h3>
+
+<p>
+LEVEL
+</p>
+
+</div>
+
+
+
+<div>
+
+<h3 id="streak">
+0
+</h3>
+
+<p>
+STREAK
+</p>
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- XP BAR -->
+
+
 <div class="card">
 
 
 <h3>
-Daily Challenge
+Level Progress
 </h3>
 
+
+<div class="progress-container">
+
+<div id="xpBar" class="progress-bar">
+
+</div>
+
+</div>
+
+
+<p id="xpText">
+0 / 100 XP
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- DAILY CHALLENGE -->
+
+
+<div class="card">
+
+
+<h3>
+Today's Challenge
+</h3>
+
+
+
+<div id="dailyChallenge">
 
 
 <div class="exercise">
@@ -220,64 +433,17 @@ Sit Ups
 
 
 
+</div>
+
+
 
 <button onclick="completeWorkout()">
 
-COMPLETE
+COMPLETE CHALLENGE
 
 </button>
 
 
-</div>
-
-
-
-
-
-
-<div class="stats">
-
-
-<div>
-
-<h3 id="xp">
-0
-</h3>
-
-<p>
-XP
-</p>
-
-</div>
-
-
-
-<div>
-
-<h3 id="streak">
-0
-</h3>
-
-<p>
-STREAK
-</p>
-
-</div>
-
-
-
-<div>
-
-<h3 id="homeLevel">
-1
-</h3>
-
-<p>
-LEVEL
-</p>
-
-</div>
-
 
 </div>
 
@@ -286,58 +452,76 @@ LEVEL
 
 
 
-<div class="card social-card">
+
+<!-- STREAK REWARD -->
+
+
+<div class="card">
 
 
 <h3>
-Join The TFY Community
+Next Streak Reward
 </h3>
 
 
-<p>
-Progress • Challenges • Growth
+<p id="streakReward">
+
+3 Day Streak
+
 </p>
 
 
+<div class="progress-container">
 
-<a
-href="https://instagram.com/TFYFitness"
-target="_blank"
-class="social-link">
+<div id="streakBar" class="progress-bar">
 
-Instagram @TFYFitness
+</div>
 
-</a>
+</div>
 
 
+<p id="streakText">
 
+0 / 3 Days
 
-<a
-href="https://www.tiktok.com/@TFYFitness"
-target="_blank"
-class="social-link">
-
-TikTok @TFYFitness
-
-</a>
-
+</p>
 
 
 </div>
+
+
+
+
+
+
+<!-- ACHIEVEMENTS -->
+
+
+<div class="card">
+
+
+<h3>
+Achievements
+</h3>
+
+
+<div id="homeAchievements">
+
+No achievements yet.
+
+</div>
+
+
+</div>
+
 
 
 
 </section>
 
-
-
-
-
-
-
-
-
-<!-- FEED -->
+<!-- =========================
+FEED PAGE
+========================= -->
 
 
 <section id="feed" class="page">
@@ -349,7 +533,9 @@ Community
 
 
 
-<button class="create" onclick="openPost()">
+<button 
+class="create"
+onclick="openPost()">
 
 + CREATE POST
 
@@ -357,9 +543,28 @@ Community
 
 
 
+
+
 <div id="videoFeed">
 
+
+<!-- Posts load here from Firebase -->
+
+
+<div class="card empty-feed">
+
+
+ 
+
+
+ 
+
+
 </div>
+
+
+</div>
+
 
 
 
@@ -373,9 +578,9 @@ Community
 
 
 
-
-
-<!-- RANK -->
+<!-- =========================
+RANK PAGE
+========================= -->
 
 
 <section id="rank" class="page">
@@ -388,10 +593,39 @@ Global Rank
 
 
 
-<div id="leaderboard">
+
+<div class="card">
+
+
+<h3>
+Your Rank
+</h3>
+
+
+<div class="your-rank">
+
 
 
 </div>
+
+
+<p>
+Keep training to climb the leaderboard.
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+ <div id="leaderboard"></div>
+
+
+
 
 
 
@@ -405,10 +639,9 @@ Global Rank
 
 
 
-
-
-
-<!-- PROFILE -->
+<!-- =========================
+PROFILE PAGE
+========================= -->
 
 
 <section id="profile" class="page">
@@ -421,33 +654,55 @@ Profile
 
 
 
+
+
 <div class="card profile-card">
 
 
 
+
+
 <img
+
 id="profileImage"
+
 class="profile-picture"
+
 src="https://placehold.co/180x180?text=TFY"
-alt="Profile"
+
+alt="Profile Picture"
+
 >
+
+
 
 
 
 
 <input
+
 id="profileUpload"
+
 type="file"
+
 accept="image/*"
+
 hidden
+
 >
 
 
 
 
+
+
+
 <button
+
 class="edit-picture"
+
 onclick="document.getElementById('profileUpload').click()"
+
 >
 
 📷 Change Picture
@@ -458,20 +713,30 @@ onclick="document.getElementById('profileUpload').click()"
 
 
 
-<h2 id="username">
+
+
+
+<h3 id="profileUsername">
 
 Guest
 
-</h2>
+</h3>
+
+
+
 
 
 
 
 
 <textarea
+
 id="bioInput"
+
 maxlength="150"
+
 placeholder="Tell the community about yourself..."
+
 ></textarea>
 
 
@@ -479,9 +744,15 @@ placeholder="Tell the community about yourself..."
 
 
 
+
+
+
 <button
-class="saveProfile"
+
 onclick="updateProfile()"
+
+class="saveProfile"
+
 >
 
 SAVE PROFILE
@@ -495,13 +766,30 @@ SAVE PROFILE
 
 
 
-<div class="profile-stats">
+</div>
+
+
+
+
+
+
+
+
+
+<!-- PROFILE STATS -->
+
+
+
+<div class="stats">
+
 
 
 <div>
 
 <h3 id="profileLevel">
+
 1
+
 </h3>
 
 <p>
@@ -513,10 +801,13 @@ LEVEL
 
 
 
+
 <div>
 
 <h3 id="profileXP">
+
 0
+
 </h3>
 
 <p>
@@ -528,10 +819,13 @@ XP
 
 
 
+
 <div>
 
 <h3 id="profileStreak">
+
 0
+
 </h3>
 
 <p>
@@ -546,12 +840,92 @@ STREAK
 
 
 
+
+
+
+
+
+
+<!-- SOCIAL STATS -->
+
+
+
+<div class="card">
+
+
+<div class="social-stats">
+
+
+<div>
+
+<h3 id="followers">
+
+0
+
+</h3>
+
+<p>
+Followers
+</p>
+
 </div>
 
 
 
 
 
+
+<div>
+
+<h3 id="following">
+
+0
+
+</h3>
+
+<p>
+Following
+</p>
+
+</div>
+
+
+
+
+
+
+<div>
+
+<h3 id="workouts">
+
+0
+
+</h3>
+
+<p>
+Workouts
+</p>
+
+</div>
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ACHIEVEMENTS -->
 
 
 
@@ -566,12 +940,49 @@ Achievements
 
 <div id="achievements">
 
+
 No achievements yet.
 
+
 </div>
 
 
+
 </div>
+
+
+
+
+
+
+
+
+
+<!-- PROFILE POSTS -->
+
+
+<div class="card">
+
+
+<h3>
+Your Posts
+</h3>
+
+
+
+<div id="profilePosts">
+
+
+No posts yet.
+
+
+</div>
+
+
+
+</div>
+
+
 
 
 
@@ -583,7 +994,33 @@ No achievements yet.
 
 
 
+
+
+
 </main>
+
+
+
+
+
+</div>
+
+<!-- =========================
+LOADING SCREEN
+========================= -->
+
+
+<div id="loadingScreen">
+
+
+<h1>
+TFY
+</h1>
+
+
+<p>
+Think For Yourself
+</p>
 
 
 </div>
@@ -594,9 +1031,106 @@ No achievements yet.
 
 
 
-<script type="module" src="./script.js"></script>
+
+<!-- =========================
+BOTTOM APP NAV (MOBILE)
+========================= -->
+
+
+<div class="bottom-nav">
+
+
+<button onclick="openPage('home')">
+
+🏠
+
+<span>
+Home
+</span>
+
+</button>
+
+
+
+
+
+<button onclick="openPage('feed')">
+
+🔥
+
+<span>
+Feed
+</span>
+
+</button>
+
+
+
+
+
+<button onclick="openPost()"
+class="create-button">
+
++
+
+</button>
+
+
+
+
+
+<button onclick="openPage('rank')">
+
+🏆
+
+<span>
+Rank
+</span>
+
+</button>
+
+
+
+
+
+<button onclick="openPage('profile')">
+
+👤
+
+<span>
+Profile
+</span>
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+FIREBASE SCRIPT
+========================= -->
+
+
+<script 
+type="module" 
+src="./script.js">
+
+</script>
+
+
+
 
 
 </body>
+
 
 </html>
