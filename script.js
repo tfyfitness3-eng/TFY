@@ -1,336 +1,305 @@
-/* =========================
-TFY V2 GLOBAL
-========================= */
+// ============================
+// TFY V2 FIREBASE IMPORTS
+// ============================
 
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&display=swap');
+import { auth, db } from "./firebase.js";
 
 
-*{
+import {
 
-margin:0;
-padding:0;
-box-sizing:border-box;
+createUserWithEmailAndPassword,
+
+signInWithEmailAndPassword,
+
+onAuthStateChanged,
+
+signOut
+
+}
+
+from
+
+"https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+
+
+  import {
+doc,
+setDoc,
+collection,
+query,
+where,
+getDocs,
+orderBy,
+limit,
+serverTimestamp,
+onSnapshot
+}
+from
+"https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+
+
+
+// ============================
+// GLOBAL PLAYER DATA
+// ============================
+
+
+let currentUser = null;
+
+
+
+let player = {
+
+
+username:"Guest",
+
+bio:"",
+
+
+xp:0,
+
+totalXP:0,
+
+level:1,
+
+
+streak:0,
+
+
+lastWorkout:null,
+
+
+totalWorkouts:0,
+
+
+followers:0,
+
+
+following:0,
+
+
+achievements:[]
+
+
+};
+
+
+
+
+// ============================
+// DAILY CHALLENGES
+// ============================
+
+
+const challenges = [
+
+
+{
+
+name:"Push Power",
+
+workouts:[
+
+["Push Ups",25],
+
+["Dips",10],
+
+["Sit Ups",30]
+
+]
+
+},
+
+
+{
+
+name:"Warrior Day",
+
+workouts:[
+
+["Squats",50],
+
+["Push Ups",30],
+
+["Plank",60]
+
+]
+
+},
+
+
+{
+
+name:"Strength Test",
+
+workouts:[
+
+["Push Ups",40],
+
+["Lunges",40],
+
+["Sit Ups",40]
+
+]
+
+},
+
+
+{
+
+name:"Discipline Day",
+
+workouts:[
+
+["Push Ups",20],
+
+["Squats",50],
+
+["Plank",90]
+
+]
 
 }
 
 
+];
 
-body{
 
-background:#111;
 
-font-family:Inter,sans-serif;
 
-display:flex;
+// ============================
+// START APP
+// ============================
 
-justify-content:center;
+  onAuthStateChanged(auth, (user)=>{
 
-overflow-x:hidden;
+const guest =
+document.getElementById("guestScreen");
 
-color:#111;
+if(user){
+
+currentUser = user;
+
+if(guest) guest.style.display = "none";
+
+loadProfile();
+
+}
+else{
+
+currentUser = null;
+
+if(guest) guest.style.display = "block";
+
+}
+
+updateUI();
+
+hideLoading();
+
+loadLeaderboard();
+
+});
+
+
+
+
+
+
+// ============================
+// AUTH
+// ============================
+
+async function usernameTaken(username){
+
+const q = query(
+collection(db,"users"),
+where("username","==",username)
+);
+
+
+const snapshot = await getDocs(q);
+
+
+return !snapshot.empty;
+
+}
+
+async function signup(){
+
+
+const username =
+document.getElementById("signupName").value;
+
+
+const email =
+document.getElementById("signupEmail").value;
+
+
+const password =
+document.getElementById("signupPassword").value;
+
+
+const taken = await usernameTaken(username);
+
+
+if(taken){
+
+alert("Username already taken 🔥");
+
+return;
 
 }
 
 
+try{
 
 
-/* =========================
-APP
-========================= */
+const result =
+await createUserWithEmailAndPassword(
+
+auth,
+
+email,
+
+password
+
+);
 
 
-.app{
 
-width:100%;
+currentUser=result.user;
 
-max-width:390px;
 
-min-height:100vh;
 
-background:#efe4c8;
+player.username=username;
 
-padding:20px;
 
-padding-bottom:100px;
+
+await saveProfile();
+
+
+
+closeAuth();
+
+
+
+alert("Welcome to TFY ");
+
+
 
 }
 
+catch(error){
 
 
+alert(error.message);
 
-/* =========================
-HEADER
-========================= */
-
-
-header{
-
-margin-bottom:25px;
 
 }
 
-
-
-header h1{
-
-font-family:Anton;
-
-font-size:75px;
-
-letter-spacing:2px;
-
-line-height:.9;
-
-}
-
-
-
-header p{
-
-font-size:12px;
-
-font-weight:900;
-
-color:#456b4d;
-
-}
-
-
-
-
-
-/* =========================
-NAV
-========================= */
-
-
-.tabs{
-
-position:fixed;
-
-bottom:0;
-
-left:0;
-
-width:100%;
-
-height:70px;
-
-display:flex;
-
-justify-content:space-around;
-
-align-items:center;
-
-background:#fff8e8;
-
-border-top:2px solid #111;
-
-z-index:1000;
-
-}
-
-
-.tabs button{
-
-background:none;
-
-color:#111;
-
-border:none;
-
-font-weight:900;
-
-font-size:22px;
-
-padding:8px;
-
-display:flex;
-
-flex-direction:column;
-
-align-items:center;
-
-gap:3px;
-
-}
-
-
-.tabs button span{
-
-font-size:11px;
-
-}
-
-
-.tabs button.active{
-
-border-bottom:4px solid #456b4d;
-
-}
-
-
-.create-button{
-
-font-size:35px !important;
-
-font-weight:900;
-
-}
-
-
-
-
-
-/* =========================
-PAGES
-========================= */
-
-
-.page{
-
-display:none;
-
-}
-
-main{
-
-padding-bottom:90px;
-
-}
-
-
-
-.page.active{
-
-display:block;
-
-}
-
-
-
-h2{
-
-font-family:Anton;
-
-font-size:45px;
-
-margin-bottom:20px;
-
-}
-
-
-
-
-/* =========================
-CARDS
-========================= */
-
-
-.card{
-
-background:#fff8e8;
-
-border:2px solid #111;
-
-border-radius:25px;
-
-padding:22px;
-
-margin-bottom:20px;
-
-box-shadow:6px 6px 0 #111;
-
-}
-
-
-
-.card h3{
-
-font-size:24px;
-
-margin-bottom:15px;
-
-}
-
-
-
-
-/* =========================
-BUTTONS
-========================= */
-
-
-button{
-
-background:#111;
-
-color:white;
-
-border:none;
-
-padding:15px 22px;
-
-border-radius:40px;
-
-font-weight:900;
-
-cursor:pointer;
-
-}
-
-
-
-button:active{
-
-transform:scale(.95);
-
-}
-
-
-
-
-
-
-
-/* =========================
-STATS
-========================= */
-
-
-.stats{
-
-display:flex;
-
-gap:10px;
-
-margin-bottom:20px;
-
-}
-
-
-
-.stats div{
-
-flex:1;
-
-background:#111;
-
-color:#fff8e8;
-
-padding:18px 5px;
-
-border-radius:20px;
-
-text-align:center;
-
-}
-
-
-
-.stats h3{
-
-font-size:28px;
 
 }
 
@@ -338,40 +307,61 @@ font-size:28px;
 
 
 
-/* =========================
-XP BARS
-========================= */
+async function login(){
 
 
-.progress-container{
+const email =
+document.getElementById("signupEmail").value;
 
-width:100%;
 
-height:18px;
 
-background:#ddd;
+const password =
+document.getElementById("signupPassword").value;
 
-border:2px solid #111;
 
-border-radius:20px;
 
-overflow:hidden;
+try{
 
-margin:15px 0;
+
+await signInWithEmailAndPassword(
+
+auth,
+
+email,
+
+password
+
+);
+
+
+
+closeAuth();
+
+
+
+}
+
+catch(error){
+
+
+alert(error.message);
+
 
 }
 
 
 
-.progress-bar{
+}
 
-height:100%;
 
-width:0%;
 
-background:#456b4d;
 
-transition:.5s;
+
+function logout(){
+
+
+signOut(auth);
+
 
 }
 
@@ -380,99 +370,17 @@ transition:.5s;
 
 
 
-/* =========================
-CHALLENGE
-========================= */
+
+function closeAuth(){
 
 
-.exercise{
-
-display:flex;
-
-justify-content:space-between;
-
-padding:15px 0;
-
-border-bottom:1px solid #ddd;
-
-font-weight:700;
-
-}
+const popup=document.getElementById("authPopup");
 
 
+if(popup)
 
+popup.style.display="none";
 
-
-/* =========================
-PROFILE
-========================= */
-
-
-.profile-card{
-
-text-align:center;
-
-}
-
-
-
-.profile-picture{
-
-width:150px;
-
-height:150px;
-
-border-radius:50%;
-
-object-fit:cover;
-
-border:4px solid #111;
-
-margin-bottom:15px;
-
-}
-
-
-
-#bioInput{
-
-width:100%;
-
-height:90px;
-
-padding:15px;
-
-border-radius:20px;
-
-border:2px solid #111;
-
-resize:none;
-
-font-family:Inter;
-
-margin-bottom:15px;
-
-}
-
-
-
-
-
-.social-stats{
-
-display:flex;
-
-justify-content:space-between;
-
-text-align:center;
-
-}
-
-
-
-.social-stats h3{
-
-font-size:25px;
 
 }
 
@@ -481,121 +389,55 @@ font-size:25px;
 
 
 
-/* =========================
-FEED
-========================= */
+
+// ============================
+// PROFILE LOADING
+// ============================
 
 
-.create{
+  function loadProfile(){
 
-width:100%;
+if(!currentUser) return;
 
-margin-bottom:20px;
+
+const ref = doc(
+db,
+"users",
+currentUser.uid
+);
+
+
+onSnapshot(ref,(snap)=>{
+
+
+if(snap.exists()){
+
+
+player = {
+
+...player,
+
+...snap.data()
+
+};
+
+
+updateUI();
+
+
+}
+
+else{
+
+
+saveProfile();
+
 
 }
 
 
+});
 
-.video-post{
-
-height:600px;
-
-background:#000;
-
-position:relative;
-
-}
-
-
-
-.video-post video{
-
-width:100%;
-
-height:100%;
-
-object-fit:cover;
-
-}
-
-
-
-
-
-
-/* =========================
-LEADERBOARD
-========================= */
-
-
-.rank-card{
-
-font-size:22px;
-
-font-weight:900;
-
-}
-
-
-
-
-
-
-/* =========================
-POPUPS
-========================= */
-
-
-.popup{
-
-display:none;
-
-position:fixed;
-
-inset:0;
-
-background:rgba(0,0,0,.7);
-
-justify-content:center;
-
-align-items:center;
-
-z-index:1000;
-
-}
-
-
-
-.popup-box{
-
-width:330px;
-
-background:#fff8e8;
-
-border:3px solid #111;
-
-border-radius:25px;
-
-padding:30px;
-
-}
-
-
-
-.popup input,
-.popup select{
-
-width:100%;
-
-padding:15px;
-
-margin-bottom:15px;
-
-border-radius:15px;
-
-border:2px solid #111;
-
-font-size:15px;
 
 }
 
@@ -604,78 +446,58 @@ font-size:15px;
 
 
 
-/* =========================
-BOTTOM NAV
-========================= */
+// ============================
+// SAVE PROFILE
+// ============================
 
 
-.bottom-nav{
+ async function saveProfile(){
 
-position:fixed;
-
-bottom:0;
-
-left:50%;
-
-transform:translateX(-50%);
-
-width:100%;
-
-max-width:390px;
-
-height:75px;
-
-background:#111;
-
-display:flex;
-
-justify-content:space-around;
-
-align-items:center;
-
-z-index:500;
-
-}
+if(!currentUser) return;
 
 
+await setDoc(
 
-.bottom-nav button{
+doc(
+db,
+"users",
+currentUser.uid
+),
 
-background:none;
+{
 
-padding:5px;
+...player,
 
-font-size:20px;
+updated: serverTimestamp()
 
-display:flex;
+},
 
-flex-direction:column;
+{
 
-align-items:center;
+merge:true
 
 }
 
-
-
-.bottom-nav span{
-
-font-size:10px;
+);
 
 }
 
+// ============================
+// XP SYSTEM
+// ============================
 
 
-.create-button{
+ async function addXP(amount){
 
-background:#456b4d!important;
+player.xp += amount;
 
-width:55px;
+player.totalXP += amount;
 
-height:55px;
+checkLevel();
 
-border-radius:50%;
+await saveProfile();
 
-font-size:35px!important;
+updateUI();
 
 }
 
@@ -683,191 +505,1255 @@ font-size:35px!important;
 
 
 
-
-/* =========================
-LOADING
-========================= */
+function checkLevel(){
 
 
-#loadingScreen{
-
-position:fixed;
-
-inset:0;
-
-background:#efe4c8;
-
-display:flex;
-
-flex-direction:column;
-
-justify-content:center;
-
-align-items:center;
-
-z-index:2000;
-
-}
+let needed = player.level * 100;
 
 
 
-#loadingScreen h1{
-
-font-family:Anton;
-
-font-size:90px;
-
-}
+while(player.xp >= needed){
 
 
+player.xp -= needed;
 
-#loadingScreen p{
 
-font-weight:900;
-
-color:#456b4d;
-
-}
+player.level++;
 
 
 
+unlockAchievement(
 
+"Level " + player.level,
 
-/* =========================
-MOBILE
-========================= */
+"Reached a new level "
 
-
-@media(max-width:400px){
-
-
-.app{
-
-padding:15px;
-
-}
+);
 
 
 
-header h1{
+alert(
 
-font-size:60px;
+" LEVEL UP!\nLevel " + player.level
 
-}
+);
 
 
 
-h2{
+needed = player.level * 100;
 
-font-size:38px;
 
 }
 
 
 }
 
-.rank-profile-picture{
 
-width:70px;
 
-height:70px;
 
-border-radius:50%;
 
-object-fit:cover;
+
+
+// ============================
+// DAILY CHALLENGE
+// ============================
+
+
+function getDailyChallenge(){
+
+
+let today =
+new Date();
+
+
+
+let day =
+today.getDate();
+
+
+
+return challenges[
+
+day % challenges.length
+
+];
+
 
 }
 
-.tfy-logo{
 
-width:140px;
 
-height:140px;
 
-object-fit:contain;
 
-margin:auto;
 
-display:block;
+
+function displayChallenge(){
+
+
+const box =
+document.getElementById("dailyChallenge");
+
+
+
+if(!box)
+
+return;
+
+
+
+const challenge =
+getDailyChallenge();
+
+
+
+box.innerHTML="";
+
+
+
+challenge.workouts.forEach(item=>{
+
+
+box.innerHTML += `
+
+
+<div class="exercise">
+
+
+${item[0]}
+
+
+<b>
+
+${item[1]}
+
+</b>
+
+
+</div>
+
+
+`;
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+// ============================
+// COMPLETE WORKOUT
+// ============================
+
+
+async function completeWorkout(){
+
+
+
+if(!currentUser){
+
+
+document.getElementById("authPopup").style.display="flex";
+
+
+return;
+
 
 }
 
 
-#guestWelcome{
 
-text-align:center;
+let today =
 
-padding:40px 20px;
+new Date().toDateString();
+
+
+
+
+
+if(player.lastWorkout === today){
+
+
+alert(
+
+"You already completed today's challenge"
+
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+// CHECK STREAK
+
+
+if(player.lastWorkout){
+
+
+let last =
+
+new Date(player.lastWorkout);
+
+
+
+let current =
+
+new Date();
+
+
+
+let difference =
+
+Math.floor(
+
+(current-last)/(1000*60*60*24)
+
+);
+
+
+
+if(difference === 1){
+
+
+player.streak++;
+
 
 }
 
 
-#guestWelcome h1{
+else if(difference > 1){
 
-font-size:40px;
 
-margin-top:20px;
+player.streak=1;
 
-}
-
-#guestScreen{
-
-display:none;
-
-text-align:center;
-
-padding:70px 30px;
 
 }
 
-.guest-logo{
 
-position:absolute;
-
-top:25px;
-
-right:25px;
-
-width:80px;
-
-height:auto;
-
-background:transparent;
 
 }
 
-#guestScreen h1{
+else{
 
-font-size:42px;
 
-margin-top:80px;
+player.streak=1;
 
-margin-bottom:25px;
 
 }
 
-#guestScreen p{
 
-font-size:20px;
 
-margin:10px 0;
 
-color:#333;
+
+
+player.lastWorkout=today;
+
+
+player.totalWorkouts++;
+
+
+
+
+
+// BASE XP
+
+
+await addXP(50);
+
+
+
+
+
+// STREAK REWARDS
+
+
+checkStreakRewards();
+
+
+
+
+
+alert(
+
+" +50 XP Earned!"
+
+);
+
+
+
+
+
+await saveProfile();
+
 
 }
 
-#guestScreen button{
 
-margin-top:35px;
 
-padding:15px 30px;
 
-font-size:18px;
 
-border:none;
 
-border-radius:14px;
 
-cursor:pointer;
+// ============================
+// STREAK REWARDS
+// ============================
+
+
+function checkStreakRewards(){
+
+
+let rewards = {
+
+
+3:100,
+
+
+7:250,
+
+
+14:500,
+
+
+30:1000,
+
+
+60:2500,
+
+
+100:5000
+
+
+};
+
+
+
+
+
+let reward =
+
+rewards[player.streak];
+
+
+
+
+
+if(reward){
+
+
+player.xp += reward;
+
+
+
+unlockAchievement(
+
+player.streak + " Day Streak",
+
+"Stayed consistent for " +
+
+player.streak +
+
+" days 🔥"
+
+);
+
+
+
+
+alert(
+
+"🔥 STREAK REWARD!\n+" +
+
+reward +
+
+" XP"
+
+);
+
+
 
 }
+
+
+}
+
+
+
+
+
+
+
+
+// ============================
+// ACHIEVEMENTS
+// ============================
+
+
+function unlockAchievement(title,description){
+
+
+
+let exists =
+
+player.achievements.find(
+
+a=>a.title===title
+
+);
+
+
+
+if(exists)
+
+return;
+
+
+
+
+
+player.achievements.push({
+
+
+title:title,
+
+
+description:description,
+
+
+date:new Date().toDateString()
+
+
+
+});
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+function updateAchievements(){
+
+
+const boxes=[
+
+
+document.getElementById(
+
+"achievements"
+
+),
+
+
+document.getElementById(
+
+"homeAchievements"
+
+)
+
+];
+
+
+
+boxes.forEach(box=>{
+
+
+if(!box)
+
+return;
+
+
+
+if(player.achievements.length===0){
+
+
+box.innerHTML=
+
+"No achievements yet.";
+
+
+
+return;
+
+
+}
+
+
+
+box.innerHTML="";
+
+
+
+player.achievements.forEach(a=>{
+
+
+box.innerHTML += `
+
+
+<div class="achievement">
+
+
+🏆 ${a.title}
+
+<br>
+
+<small>
+
+${a.description}
+
+</small>
+
+
+</div>
+
+
+`;
+
+
+
+});
+
+
+
+});
+
+
+
+}
+
+// ============================
+// UPDATE UI
+// ============================
+
+
+function updateUI(){
+
+
+const elements = {
+
+
+homeUsername:
+player.username,
+
+
+xp:
+player.xp,
+
+
+homeLevel:
+player.level,
+
+
+streak:
+player.streak,
+
+
+profileUsername:
+player.username,
+
+
+profileXP:
+player.xp,
+
+
+profileLevel:
+player.level,
+
+
+profileStreak:
+player.streak,
+
+
+workouts:
+player.totalWorkouts,
+
+
+followers:
+player.followers,
+
+
+following:
+player.following
+
+
+};
+
+
+
+
+Object.keys(elements).forEach(id=>{
+
+
+const element =
+document.getElementById(id);
+
+
+
+if(element){
+
+element.innerText =
+elements[id];
+
+}
+
+
+});
+
+
+
+
+
+// XP BAR
+
+
+const xpBar =
+document.getElementById("xpBar");
+
+
+
+const needed =
+player.level * 100;
+
+
+
+if(xpBar){
+
+
+xpBar.style.width =
+
+Math.min(
+
+(player.xp / needed) * 100,
+
+100
+
+)
+
++ "%";
+
+
+}
+
+
+
+
+
+
+
+const xpText =
+document.getElementById("xpText");
+
+
+
+if(xpText){
+
+
+xpText.innerText =
+
+player.xp +
+
+" / " +
+
+needed +
+
+" XP";
+
+
+}
+
+
+
+
+
+
+
+// STREAK BAR
+
+
+const streakBar =
+document.getElementById("streakBar");
+
+
+
+if(streakBar){
+
+
+streakBar.style.width =
+
+Math.min(
+
+(player.streak / 3) * 100,
+
+100
+
+)
+
++ "%";
+
+
+}
+
+
+
+const streakText =
+document.getElementById("streakText");
+
+
+
+if(streakText){
+
+
+streakText.innerText =
+
+player.streak +
+
+" / 3 Days";
+
+
+}
+
+
+
+
+updateAchievements();
+
+
+displayChallenge();
+
+
+}
+
+
+
+
+
+
+
+// ============================
+// NAVIGATION
+// ============================
+
+
+function openPage(page){
+
+
+
+document
+.querySelectorAll(".page")
+.forEach(section=>{
+
+
+section.classList.remove("active");
+
+
+});
+
+
+
+
+const selected =
+
+document.getElementById(page);
+
+
+
+if(selected){
+
+
+selected.classList.add("active");
+
+
+}
+
+
+
+
+
+document
+.querySelectorAll(".tabs button")
+.forEach(btn=>{
+
+
+btn.classList.remove("active");
+
+
+});
+
+
+
+
+
+const tab =
+
+document.getElementById(
+
+page+"Tab"
+
+);
+
+
+
+if(tab){
+
+
+tab.classList.add("active");
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+// ============================
+// PROFILE UPDATE
+// ============================
+
+
+async function updateProfile(){
+
+
+
+if(!currentUser){
+
+
+alert(
+
+"Login first"
+
+);
+
+
+return;
+
+
+}
+
+
+
+
+const bio =
+
+document.getElementById(
+
+"bioInput"
+
+);
+
+
+
+if(bio){
+
+
+player.bio =
+bio.value;
+
+
+}
+
+
+
+
+
+await saveProfile();
+
+
+updateUI();
+
+
+
+alert(
+
+"Profile saved 🔥"
+
+);
+
+
+}
+
+
+
+
+
+
+
+
+// ============================
+// LEADERBOARD
+// ============================
+
+
+ // ============================
+// LEADERBOARD
+// ============================
+
+ function loadLeaderboard(){
+
+const board =
+document.getElementById("leaderboard");
+
+
+if(!board) return;
+
+
+
+const q=query(
+
+collection(db,"users"),
+
+orderBy("totalXP","desc"),
+
+limit(10)
+
+);
+
+
+
+onSnapshot(q,(snapshot)=>{
+
+
+board.innerHTML="";
+
+
+let rank=1;
+
+
+snapshot.forEach((user)=>{
+
+
+const data=user.data();
+
+
+board.innerHTML += `
+
+<div class="card rank-card">
+
+ <img 
+src="${data.profilePic || 'https://placehold.co/80x80?text=TFY'}"
+class="rank-profile-picture"
+>
+
+
+<br>
+
+#${rank}
+
+<br>
+
+${data.username || "TFY Athlete"}
+
+<br>
+
+Level ${data.level || 1}
+
+<br>
+
+${data.totalXP || 0} XP
+
+</div>
+
+`;
+
+rank++;
+
+
+});
+
+
+});
+
+
+}
+
+// ============================
+// POST POPUP FUNCTIONS
+// ============================
+
+
+function openPost(){
+
+
+const popup =
+document.getElementById("postPopup");
+
+
+
+if(popup){
+
+popup.style.display="flex";
+
+}
+
+
+}
+
+
+
+
+function closePost(){
+
+
+const popup =
+document.getElementById("postPopup");
+
+
+
+if(popup){
+
+popup.style.display="none";
+
+}
+
+
+}
+
+
+
+
+
+
+
+// ============================
+// PROFILE IMAGE PREVIEW
+// (Storage will be added later)
+// ============================
+
+
+const profileUpload =
+document.getElementById("profileUpload");
+
+
+
+if(profileUpload){
+
+
+profileUpload.addEventListener(
+
+"change",
+
+function(){
+
+
+const file=this.files[0];
+
+
+
+if(file){
+
+
+const image =
+document.getElementById(
+"profileImage"
+);
+
+
+
+if(image){
+
+
+image.src =
+URL.createObjectURL(file);
+
+
+}
+
+
+}
+
+
+}
+
+
+);
+
+
+}
+
+
+
+
+
+
+
+// ============================
+// CREATE POST FOUNDATION
+// ============================
+
+
+async function createPost(){
+
+
+if(!currentUser){
+
+
+alert(
+"Login to create posts"
+);
+
+
+return;
+
+
+}
+
+
+
+const caption =
+document.getElementById(
+"postCaption"
+).value;
+
+
+
+if(!caption){
+
+
+alert(
+"Write something first"
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+// Posts will connect to Firebase later
+
+
+alert(
+"Post system ready - Firebase posts coming next 🔥"
+);
+
+
+
+closePost();
+
+
+}
+
+
+
+
+
+
+
+
+
+// ============================
+// LOADING SCREEN
+// ============================
+
+
+function hideLoading(){
+
+
+const loading =
+document.getElementById(
+"loadingScreen"
+);
+
+
+
+if(loading){
+
+
+loading.style.display="none";
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+// ============================
+// START APP
+// ============================
+
+
+window.addEventListener(
+"load",
+()=>{
+
+
+openPage("home");
+
+
+hideLoading();
+
+
+}
+);
+
+
+
+
+
+
+
+
+// ============================
+// MAKE FUNCTIONS AVAILABLE
+// TO HTML BUTTONS
+// ============================
+
+
+window.signup = signup;
+
+window.login = login;
+
+window.logout = logout;
+
+
+window.openPage = openPage;
+
+
+window.completeWorkout = completeWorkout;
+
+
+window.updateProfile = updateProfile;
+
+
+window.openPost = openPost;
+
+
+window.closePost = closePost;
+
+
+window.createPost = createPost;
