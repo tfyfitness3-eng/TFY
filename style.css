@@ -1,82 +1,71 @@
+/* =========================
+TFY V2 GLOBAL
+========================= */
+
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&display=swap');
 
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+
+margin:0;
+padding:0;
+box-sizing:border-box;
+
 }
 
 
 
 body{
 
-    background:#111;
+background:#111;
 
-    font-family:Inter, sans-serif;
+font-family:Inter,sans-serif;
 
-    display:flex;
+display:flex;
 
-    justify-content:center;
+justify-content:center;
 
-    overflow-x:hidden;
+overflow-x:hidden;
+
+color:#111;
 
 }
 
 
 
 
-
-/* =====================
+/* =========================
 APP
-===================== */
+========================= */
 
 
 .app{
 
-    width:100%;
+width:100%;
 
-    max-width:390px;
+max-width:390px;
 
-    min-height:100vh;
+min-height:100vh;
 
-    background:#efe4c8;
+background:#efe4c8;
 
-    padding:20px;
+padding:20px;
+
+padding-bottom:100px;
 
 }
 
 
 
 
-
-
-/* =====================
+/* =========================
 HEADER
-===================== */
+========================= */
 
 
 header{
 
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
-
-    margin-bottom:25px;
-
-}
-
-
-
-.logo{
-
-    width:70px;
-
-    height:70px;
-
-    object-fit:contain;
+margin-bottom:25px;
 
 }
 
@@ -84,13 +73,13 @@ header{
 
 header h1{
 
-    font-family:Anton;
+font-family:Anton;
 
-    font-size:70px;
+font-size:75px;
 
-    letter-spacing:2px;
+letter-spacing:2px;
 
-    line-height:.9;
+line-height:.9;
 
 }
 
@@ -98,11 +87,11 @@ header h1{
 
 header p{
 
-    font-size:12px;
+font-size:12px;
 
-    font-weight:900;
+font-weight:900;
 
-    color:#456b4d;
+color:#456b4d;
 
 }
 
@@ -110,48 +99,82 @@ header p{
 
 
 
-
-
-/* =====================
-NAVIGATION
-===================== */
+/* =========================
+NAV
+========================= */
 
 
 .tabs{
 
-    display:flex;
+position:fixed;
 
-    justify-content:space-between;
+bottom:0;
 
-    margin-bottom:25px;
+left:0;
 
-    border-bottom:2px solid #111;
+width:100%;
+
+height:70px;
+
+display:flex;
+
+justify-content:space-around;
+
+align-items:center;
+
+background:#fff8e8;
+
+border-top:2px solid #111;
+
+z-index:1000;
 
 }
-
 
 
 .tabs button{
 
-    background:none;
+background:none;
 
-    color:#111;
+color:#111;
 
-    border:none;
+border:none;
 
-    padding:12px 5px;
+font-weight:900;
 
-    font-weight:900;
+font-size:22px;
 
-    font-size:13px;
+padding:8px;
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+gap:3px;
 
 }
 
+
+.tabs button span{
+
+font-size:11px;
+
+}
 
 
 .tabs button.active{
 
-    border-bottom:4px solid #456b4d;
+border-bottom:4px solid #456b4d;
+
+}
+
+
+.create-button{
+
+font-size:35px !important;
+
+font-weight:900;
 
 }
 
@@ -159,14 +182,20 @@ NAVIGATION
 
 
 
-/* =====================
+/* =========================
 PAGES
-===================== */
+========================= */
 
 
 .page{
 
-    display:none;
+display:none;
+
+}
+
+main{
+
+padding-bottom:90px;
 
 }
 
@@ -174,7 +203,7 @@ PAGES
 
 .page.active{
 
-    display:block;
+display:block;
 
 }
 
@@ -182,40 +211,35 @@ PAGES
 
 h2{
 
-    font-family:Anton;
+font-family:Anton;
 
-    font-size:45px;
+font-size:45px;
 
-    letter-spacing:1px;
-
-    margin-bottom:20px;
+margin-bottom:20px;
 
 }
 
 
 
 
-
-
-
-/* =====================
+/* =========================
 CARDS
-===================== */
+========================= */
 
 
 .card{
 
-    background:#fff8e8;
+background:#fff8e8;
 
-    border:2px solid #111;
+border:2px solid #111;
 
-    border-radius:25px;
+border-radius:25px;
 
-    padding:25px;
+padding:22px;
 
-    margin-bottom:20px;
+margin-bottom:20px;
 
-    box-shadow:6px 6px 0 #111;
+box-shadow:6px 6px 0 #111;
 
 }
 
@@ -223,64 +247,43 @@ CARDS
 
 .card h3{
 
-    font-size:24px;
+font-size:24px;
 
-    margin-bottom:15px;
-
-}
-
-
-
-
-
-/* =====================
-WORKOUT
-===================== */
-
-
-.exercise{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    padding:15px 0;
-
-    border-bottom:1px solid #ddd;
-
-    font-weight:700;
+margin-bottom:15px;
 
 }
 
 
 
+
+/* =========================
+BUTTONS
+========================= */
 
 
 button{
 
-    background:#111;
+background:#111;
 
-    color:white;
+color:white;
 
-    border:none;
+border:none;
 
-    padding:16px 25px;
+padding:15px 22px;
 
-    border-radius:40px;
+border-radius:40px;
 
-    font-weight:900;
+font-weight:900;
 
-    cursor:pointer;
+cursor:pointer;
 
 }
-
-
 
 
 
 button:active{
 
-    transform:scale(.95);
+transform:scale(.95);
 
 }
 
@@ -290,19 +293,18 @@ button:active{
 
 
 
-
-/* =====================
+/* =========================
 STATS
-===================== */
+========================= */
 
 
 .stats{
 
-    display:flex;
+display:flex;
 
-    gap:10px;
+gap:10px;
 
-    margin-bottom:20px;
+margin-bottom:20px;
 
 }
 
@@ -310,17 +312,17 @@ STATS
 
 .stats div{
 
-    flex:1;
+flex:1;
 
-    background:#111;
+background:#111;
 
-    color:#fff8e8;
+color:#fff8e8;
 
-    border-radius:20px;
+padding:18px 5px;
 
-    padding:20px 10px;
+border-radius:20px;
 
-    text-align:center;
+text-align:center;
 
 }
 
@@ -328,7 +330,7 @@ STATS
 
 .stats h3{
 
-    font-size:28px;
+font-size:28px;
 
 }
 
@@ -336,294 +338,74 @@ STATS
 
 
 
+/* =========================
+XP BARS
+========================= */
 
-/* =====================
-SOCIAL CARD
-===================== */
 
+.progress-container{
 
-.social-card{
+width:100%;
 
-    background:#111;
+height:18px;
 
-    color:#fff8e8;
+background:#ddd;
 
-    box-shadow:6px 6px #456b4d;
-
-}
-
-
-
-.social-card p{
-
-    margin-bottom:20px;
-
-    opacity:.8;
-
-}
-
-
-
-.social-link{
-
-    display:block;
-
-    text-decoration:none;
-
-    background:#efe4c8;
-
-    color:#111;
-
-    padding:15px;
-
-    border-radius:18px;
-
-    margin-top:12px;
-
-    font-weight:900;
-
-}
-
-
-
-
-
-.social-link:hover{
-
-    transform:translateY(-3px);
-
-}
-
-
-
-
-
-
-
-/* =====================
-FEED
-===================== */
-
-
-#feed{
-
-    margin-left:-20px;
-
-    margin-right:-20px;
-
-}
-
-
-
-#feed h2,
-
-#feed .create{
-
-    margin-left:20px;
-
-    margin-right:20px;
-
-}
-
-
-
-.create{
-
-    width:calc(100% - 40px);
-
-    margin-bottom:20px;
-
-}
-
-
-
-
-
-.video-post{
-
-    height:650px;
-
-    background:#000;
-
-    position:relative;
-
-}
-
-
-
-.video-post video{
-
-    width:100%;
-
-    height:100%;
-
-    object-fit:cover;
-
-}
-
-
-
-.video-info{
-
-    position:absolute;
-
-    bottom:30px;
-
-    left:20px;
-
-    color:white;
-
-}
-
-
-
-
-
-
-
-/* =====================
-POPUP
-===================== */
-
-
-.popup{
-
-    display:none;
-
-    position:fixed;
-
-    inset:0;
-
-    background:rgba(0,0,0,.7);
-
-    justify-content:center;
-
-    align-items:center;
-
-    z-index:100;
-
-}
-
-
-
-
-
-.popup-box{
-
-    width:330px;
-
-    background:#fff8e8;
-
-    border:3px solid #111;
-
-    border-radius:25px;
-
-    padding:30px;
-
-}
-
-
-
-
-
-.popup input{
-
-    width:100%;
-
-    padding:15px;
-
-    margin-bottom:15px;
-
-    border:2px solid #111;
-
-    border-radius:15px;
-
-}
-
-
-
-
-
-.cancel{
-
-    background:#777;
-
-    margin-top:10px;
-
-    width:100%;
-
-}
-
-
-
-
-
-
-
-/* =====================
-MOBILE
-===================== */
-
-
-@media(max-width:400px){
-
-
-.app{
-
-    padding:15px;
-
-}
-
-
-
-header h1{
-
-    font-size:60px;
-
-}
-
-
-
-h2{
-
-    font-size:38px;
-
-}
-
-
-}
-
-.challenge{
-
-background:#efe4c8;
+border:2px solid #111;
 
 border-radius:20px;
 
-padding:15px;
+overflow:hidden;
 
-margin-top:15px;
-
-}
-
-
-.challenge h4{
-
-font-size:22px;
+margin:15px 0;
 
 }
 
 
-.challenge button{
 
-margin-top:10px;
+.progress-bar{
 
-font-size:14px;
+height:100%;
+
+width:0%;
+
+background:#456b4d;
+
+transition:.5s;
 
 }
 
-/* =====================
-PROFILE SYSTEM
-===================== */
+
+
+
+
+
+/* =========================
+CHALLENGE
+========================= */
+
+
+.exercise{
+
+display:flex;
+
+justify-content:space-between;
+
+padding:15px 0;
+
+border-bottom:1px solid #ddd;
+
+font-weight:700;
+
+}
+
+
+
+
+
+/* =========================
+PROFILE
+========================= */
 
 
 .profile-card{
@@ -648,18 +430,6 @@ border:4px solid #111;
 
 margin-bottom:15px;
 
-background:#efe4c8;
-
-}
-
-
-
-.edit-picture{
-
-margin-bottom:20px;
-
-font-size:14px;
-
 }
 
 
@@ -670,76 +440,434 @@ width:100%;
 
 height:90px;
 
-resize:none;
-
 padding:15px;
-
-border:2px solid #111;
 
 border-radius:20px;
 
-font-family:Inter,sans-serif;
+border:2px solid #111;
 
-font-size:14px;
+resize:none;
+
+font-family:Inter;
 
 margin-bottom:15px;
 
-background:white;
-
 }
 
 
 
-.saveProfile{
-
-width:100%;
-
-}
 
 
-
-.profile-stats{
+.social-stats{
 
 display:flex;
 
-gap:10px;
+justify-content:space-between;
+
+text-align:center;
+
+}
+
+
+
+.social-stats h3{
+
+font-size:25px;
+
+}
+
+
+
+
+
+
+/* =========================
+FEED
+========================= */
+
+
+.create{
+
+width:100%;
+
+margin-bottom:20px;
+
+}
+
+
+
+.video-post{
+
+height:600px;
+
+background:#000;
+
+position:relative;
+
+}
+
+
+
+.video-post video{
+
+width:100%;
+
+height:100%;
+
+object-fit:cover;
+
+}
+
+
+
+
+
+
+/* =========================
+LEADERBOARD
+========================= */
+
+
+.rank-card{
+
+font-size:22px;
+
+font-weight:900;
+
+}
+
+
+
+
+
+
+/* =========================
+POPUPS
+========================= */
+
+
+.popup{
+
+display:none;
+
+position:fixed;
+
+inset:0;
+
+background:rgba(0,0,0,.7);
+
+justify-content:center;
+
+align-items:center;
+
+z-index:1000;
+
+}
+
+
+
+.popup-box{
+
+width:330px;
+
+background:#fff8e8;
+
+border:3px solid #111;
+
+border-radius:25px;
+
+padding:30px;
+
+}
+
+
+
+.popup input,
+.popup select{
+
+width:100%;
+
+padding:15px;
+
+margin-bottom:15px;
+
+border-radius:15px;
+
+border:2px solid #111;
+
+font-size:15px;
+
+}
+
+
+
+
+
+
+/* =========================
+BOTTOM NAV
+========================= */
+
+
+.bottom-nav{
+
+position:fixed;
+
+bottom:0;
+
+left:50%;
+
+transform:translateX(-50%);
+
+width:100%;
+
+max-width:390px;
+
+height:75px;
+
+background:#111;
+
+display:flex;
+
+justify-content:space-around;
+
+align-items:center;
+
+z-index:500;
+
+}
+
+
+
+.bottom-nav button{
+
+background:none;
+
+padding:5px;
+
+font-size:20px;
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+}
+
+
+
+.bottom-nav span{
+
+font-size:10px;
+
+}
+
+
+
+.create-button{
+
+background:#456b4d!important;
+
+width:55px;
+
+height:55px;
+
+border-radius:50%;
+
+font-size:35px!important;
+
+}
+
+
+
+
+
+
+/* =========================
+LOADING
+========================= */
+
+
+#loadingScreen{
+
+position:fixed;
+
+inset:0;
+
+background:#efe4c8;
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:center;
+
+align-items:center;
+
+z-index:2000;
+
+}
+
+
+
+#loadingScreen h1{
+
+font-family:Anton;
+
+font-size:90px;
+
+}
+
+
+
+#loadingScreen p{
+
+font-weight:900;
+
+color:#456b4d;
+
+}
+
+
+
+
+
+/* =========================
+MOBILE
+========================= */
+
+
+@media(max-width:400px){
+
+
+.app{
+
+padding:15px;
+
+}
+
+
+
+header h1{
+
+font-size:60px;
+
+}
+
+
+
+h2{
+
+font-size:38px;
+
+}
+
+
+}
+
+.rank-profile-picture{
+
+width:70px;
+
+height:70px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+}
+
+.tfy-logo{
+
+width:140px;
+
+height:140px;
+
+object-fit:contain;
+
+margin:auto;
+
+display:block;
+
+}
+
+
+#guestWelcome{
+
+text-align:center;
+
+padding:40px 20px;
+
+}
+
+
+#guestWelcome h1{
+
+font-size:40px;
 
 margin-top:20px;
 
 }
 
+#guestScreen{
 
+display:none;
 
-.profile-stats div{
+text-align:center;
 
-flex:1;
-
-background:#111;
-
-color:#fff8e8;
-
-border-radius:20px;
-
-padding:15px 5px;
+padding:70px 30px;
 
 }
 
+.guest-logo{
 
+position:absolute;
 
-.profile-stats h3{
+top:25px;
 
-font-size:25px;
+right:25px;
 
-margin-bottom:5px;
+width:80px;
+
+height:auto;
+
+background:transparent;
 
 }
 
+#guestScreen h1{
 
+font-size:42px;
 
-.profile-stats p{
+margin-top:80px;
 
-font-size:12px;
+margin-bottom:25px;
 
-font-weight:900;
+}
+
+#guestScreen p{
+
+font-size:20px;
+
+margin:10px 0;
+
+color:#333;
+
+}
+
+#guestScreen button{
+
+margin-top:35px;
+
+padding:15px 30px;
+
+font-size:18px;
+
+border:none;
+
+border-radius:14px;
+
+cursor:pointer;
 
 }
