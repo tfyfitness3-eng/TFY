@@ -1,669 +1,97 @@
-// ============================
-// FIREBASE IMPORTS
-// ============================
+/* =========================
+TFY V2 GLOBAL
+========================= */
 
-import { auth, db, storage } from "./firebase.js";
-
-import {
-createUserWithEmailAndPassword,
-signInWithEmailAndPassword,
-onAuthStateChanged,
-signOut
-}
-from
-"https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&display=swap');
 
 
-import {
-doc,
-setDoc,
-getDoc,
-collection,
-query,
-orderBy,
-limit,
-getDocs
-}
-from
-"https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+*{
 
-
-import {
-ref,
-uploadBytes,
-getDownloadURL
-}
-from
-"https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
-
-
-
-// ============================
-// GLOBAL STATE
-// ============================
-
-let currentUser = null;
-
-
-let player = {
-
-username:"Guest",
-
-name:"Guest",
-
-bio:"",
-
-profilePic:"",
-
-xp:0,
-
-level:1,
-
-streak:0,
-
-lastWorkout:null,
-
-totalWorkouts:0,
-
-followers:[],
-
-following:[]
-
-};
-
-
-
-// ============================
-// AUTH LISTENER
-// ============================
-
-
-onAuthStateChanged(auth, async(user)=>{
-
-
-if(user){
-
-currentUser=user;
-
-await loadProfile();
-
-document.getElementById("authPopup").style.display="none";
-
-
-}else{
-
-
-currentUser=null;
-
-
-}
-
-
-updateUI();
-
-loadLeaderboard();
-
-
-});
-
-
-
-
-// ============================
-// SIGN UP
-// ============================
-
-
-async function signup(){
-
-
-const username =
-document.getElementById("signupName").value;
-
-
-const email =
-document.getElementById("signupEmail").value;
-
-
-const password =
-document.getElementById("signupPassword").value;
-
-
-
-if(!username || !email || !password){
-
-alert("Fill everything");
-
-return;
+margin:0;
+padding:0;
+box-sizing:border-box;
 
 }
 
 
 
-try{
+body{
 
+background:#111;
 
-const result =
-await createUserWithEmailAndPassword(
-auth,
-email,
-password
-);
+font-family:Inter,sans-serif;
 
+display:flex;
 
+justify-content:center;
 
-const user=result.user;
+overflow-x:hidden;
 
-
-
-await setDoc(
-doc(db,"users",user.uid),
-{
-
-username,
-
-name:username,
-
-bio:"",
-
-profilePic:"",
-
-xp:0,
-
-level:1,
-
-streak:0,
-
-lastWorkout:null,
-
-totalWorkouts:0,
-
-followers:[],
-
-following:[],
-
-createdAt:Date.now()
-
-}
-
-);
-
-
-
-alert("Welcome to TFY 🔥");
-
-
-}
-
-catch(error){
-
-alert(error.message);
-
-}
-
+color:#111;
 
 }
 
 
 
 
-// ============================
-// LOGIN
-// ============================
+/* =========================
+APP
+========================= */
 
 
-async function login(){
+.app{
 
+width:100%;
 
-const email =
-document.getElementById("signupEmail").value;
+max-width:390px;
 
+min-height:100vh;
 
-const password =
-document.getElementById("signupPassword").value;
+background:#efe4c8;
 
+padding:20px;
 
-
-try{
-
-
-await signInWithEmailAndPassword(
-auth,
-email,
-password
-);
-
-
-}
-
-catch(error){
-
-alert(error.message);
-
-}
-
+padding-bottom:100px;
 
 }
 
 
 
 
-// ============================
-// LOGOUT
-// ============================
+/* =========================
+HEADER
+========================= */
 
 
-function logout(){
+header{
 
-signOut(auth);
-
-}
-
-
-
-
-// ============================
-// PROFILE LOAD
-// ============================
-
-
-async function loadProfile(){
-
-
-if(!currentUser)return;
-
-
-
-const snap =
-await getDoc(
-doc(db,"users",currentUser.uid)
-);
-
-
-
-if(snap.exists()){
-
-
-player={
-
-...player,
-
-...snap.data()
-
-};
-
+margin-bottom:25px;
 
 }
 
 
 
-}
+header h1{
 
+font-family:Anton;
 
+font-size:75px;
 
-// ============================
-// SAVE PROFILE
-// ============================
+letter-spacing:2px;
 
-
-async function saveProfile(){
-
-
-if(!currentUser)return;
-
-
-await setDoc(
-
-doc(db,"users",currentUser.uid),
-
-player,
-
-{
-merge:true
-}
-
-);
-
+line-height:.9;
 
 }
 
 
 
-// ============================
-// PROFILE UPDATE
-// ============================
+header p{
 
+font-size:12px;
 
-async function updateProfile(){
+font-weight:900;
 
-
-if(!currentUser){
-
-alert("Login first");
-
-return;
-
-}
-
-
-
-const bio =
-document.getElementById("bioInput");
-
-
-
-if(bio){
-
-player.bio=bio.value;
-
-}
-
-
-
-const file =
-document.getElementById("profileUpload").files[0];
-
-
-
-if(file){
-
-
-const imageRef =
-ref(
-storage,
-"profilePictures/"+currentUser.uid
-);
-
-
-
-await uploadBytes(
-imageRef,
-file
-);
-
-
-
-player.profilePic =
-await getDownloadURL(imageRef);
-
-
-}
-
-
-
-await saveProfile();
-
-
-updateUI();
-
-
-alert("Profile Saved 🔥");
-
-
-}
-
-
-
-// ============================
-// UI UPDATE
-// ============================
-
-
-function updateUI(){
-
-
-
-document.querySelectorAll("#username")
-.forEach(el=>{
-
-el.innerText=player.username;
-
-});
-
-
-
-document.querySelectorAll("#xp")
-.forEach(el=>{
-
-el.innerText=player.xp;
-
-});
-
-
-
-document.querySelectorAll("#profileXP")
-.forEach(el=>{
-
-el.innerText=player.xp;
-
-});
-
-
-
-document.querySelectorAll("#profileLevel")
-.forEach(el=>{
-
-el.innerText=player.level;
-
-});
-
-
-
-document.querySelectorAll("#homeLevel")
-.forEach(el=>{
-
-el.innerText=player.level;
-
-});
-
-
-
-document.querySelectorAll("#streak")
-.forEach(el=>{
-
-el.innerText=player.streak;
-
-});
-
-
-
-document.querySelectorAll("#profileStreak")
-.forEach(el=>{
-
-el.innerText=player.streak;
-
-});
-
-
-
-const bio =
-document.getElementById("bioInput");
-
-
-if(bio){
-
-bio.value=player.bio || "";
-
-}
-
-
-
-const img =
-document.getElementById("profileImage");
-
-
-if(img && player.profilePic){
-
-img.src=player.profilePic;
-
-}
-
-
-}
-
-
-
-
-// ============================
-// NAVIGATION
-// ============================
-
-
-function openPage(page){
-
-
-document.querySelectorAll(".page")
-.forEach(section=>{
-
-section.classList.remove("active");
-
-});
-
-
-
-const selected =
-document.getElementById(page);
-
-
-if(selected){
-
-selected.classList.add("active");
-
-}
-
-
-
-document.querySelectorAll(".tabs button")
-.forEach(btn=>{
-
-btn.classList.remove("active");
-
-});
-
-
-
-const tab =
-document.getElementById(page+"Tab");
-
-
-if(tab){
-
-tab.classList.add("active");
-
-}
-
-
-}
-
-
-
-
-// ============================
-// XP SYSTEM
-// ============================
-
-
-function addXP(amount){
-
-
-player.xp += amount;
-
-
-checkLevel();
-
-
-saveProfile();
-
-
-updateUI();
-
-
-}
-
-
-
-function checkLevel(){
-
-
-let needed =
-player.level * 100;
-
-
-
-while(player.xp >= needed){
-
-
-player.xp -= needed;
-
-
-player.level++;
-
-
-alert(
-"LEVEL UP 🔥 Level "+player.level
-);
-
-
-needed =
-player.level * 100;
-
-
-}
-
-
-}
-
-
-
-
-// ============================
-// DAILY WORKOUT
-// ============================
-
-
-async function completeWorkout(){
-
-
-if(!currentUser){
-
-
-document.getElementById("authPopup").style.display="flex";
-
-return;
-
-
-}
-
-
-
-let today =
-new Date().toDateString();
-
-
-
-if(player.lastWorkout===today){
-
-alert("Already completed today 💪");
-
-return;
-
-}
-
-
-
-player.lastWorkout=today;
-
-player.streak++;
-
-player.totalWorkouts++;
-
-
-addXP(50);
-
-
-
-alert("+50 XP Earned 🔥");
-
+color:#456b4d;
 
 }
 
@@ -671,160 +99,775 @@ alert("+50 XP Earned 🔥");
 
 
 
-// ============================
-// LEADERBOARD
-// ============================
+/* =========================
+NAV
+========================= */
 
 
-async function loadLeaderboard(){
+.tabs{
 
+position:fixed;
 
-const board =
-document.getElementById("leaderboard");
+bottom:0;
 
+left:0;
 
+width:100%;
 
-if(!board)return;
+height:70px;
 
+display:flex;
 
+justify-content:space-around;
 
-try{
+align-items:center;
 
+background:#fff8e8;
 
-const q=query(
+border-top:2px solid #111;
 
-collection(db,"users"),
-
-orderBy(
-"xp",
-"desc"
-),
-
-limit(10)
-
-);
-
-
-
-const snap =
-await getDocs(q);
-
-
-
-board.innerHTML="";
-
-
-
-let rank=1;
-
-
-
-snap.forEach(user=>{
-
-
-const data=user.data();
-
-
-
-board.innerHTML += `
-
-<div class="card rank">
-
-🏆 #${rank}
-
-<br>
-
-<b>${data.username}</b>
-
-<br>
-
-${data.xp} XP
-
-</div>
-
-`;
-
-
-rank++;
-
-
-});
-
-
-
-}
-
-catch(error){
-
-console.log(error);
+z-index:1000;
 
 }
 
 
+.tabs button{
+
+background:none;
+
+color:#111;
+
+border:none;
+
+font-weight:900;
+
+font-size:22px;
+
+padding:8px;
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+gap:3px;
+
+}
+
+
+.tabs button span{
+
+font-size:11px;
+
+}
+
+
+.tabs button.active{
+
+border-bottom:4px solid #456b4d;
+
+}
+
+
+.create-button{
+
+font-size:35px !important;
+
+font-weight:900;
 
 }
 
 
 
 
-// ============================
-// POST SYSTEM PLACEHOLDERS
-// ============================
+
+/* =========================
+PAGES
+========================= */
 
 
-function openPost(){
+.page{
 
-document.getElementById("postPopup").style.display="flex";
-
-}
-
-
-function closePost(){
-
-document.getElementById("postPopup").style.display="none";
+display:none;
 
 }
 
+main{
 
-
-async function createPost(){
-
-
-alert("Video posting system next: Firestore + Storage");
-
+padding-bottom:90px;
 
 }
 
 
 
-// ============================
-// START APP
-// ============================
+.page.active{
+
+display:block;
+
+}
 
 
-openPage("home");
+
+h2{
+
+font-family:Anton;
+
+font-size:45px;
+
+margin-bottom:20px;
+
+}
 
 
 
-// ============================
-// GLOBAL BUTTON CONNECTIONS
-// ============================
+
+/* =========================
+CARDS
+========================= */
 
 
-window.signup=signup;
+.card{
 
-window.login=login;
+background:#fff8e8;
 
-window.logout=logout;
+border:2px solid #111;
 
-window.openPage=openPage;
+border-radius:25px;
 
-window.completeWorkout=completeWorkout;
+padding:22px;
 
-window.updateProfile=updateProfile;
+margin-bottom:20px;
 
-window.openPost=openPost;
+box-shadow:6px 6px 0 #111;
 
-window.closePost=closePost;
+}
 
-window.createPost=createPost;
+
+
+.card h3{
+
+font-size:24px;
+
+margin-bottom:15px;
+
+}
+
+
+
+
+/* =========================
+BUTTONS
+========================= */
+
+
+button{
+
+background:#111;
+
+color:white;
+
+border:none;
+
+padding:15px 22px;
+
+border-radius:40px;
+
+font-weight:900;
+
+cursor:pointer;
+
+}
+
+
+
+button:active{
+
+transform:scale(.95);
+
+}
+
+
+
+
+
+
+
+/* =========================
+STATS
+========================= */
+
+
+.stats{
+
+display:flex;
+
+gap:10px;
+
+margin-bottom:20px;
+
+}
+
+
+
+.stats div{
+
+flex:1;
+
+background:#111;
+
+color:#fff8e8;
+
+padding:18px 5px;
+
+border-radius:20px;
+
+text-align:center;
+
+}
+
+
+
+.stats h3{
+
+font-size:28px;
+
+}
+
+
+
+
+
+/* =========================
+XP BARS
+========================= */
+
+
+.progress-container{
+
+width:100%;
+
+height:18px;
+
+background:#ddd;
+
+border:2px solid #111;
+
+border-radius:20px;
+
+overflow:hidden;
+
+margin:15px 0;
+
+}
+
+
+
+.progress-bar{
+
+height:100%;
+
+width:0%;
+
+background:#456b4d;
+
+transition:.5s;
+
+}
+
+
+
+
+
+
+/* =========================
+CHALLENGE
+========================= */
+
+
+.exercise{
+
+display:flex;
+
+justify-content:space-between;
+
+padding:15px 0;
+
+border-bottom:1px solid #ddd;
+
+font-weight:700;
+
+}
+
+
+
+
+
+/* =========================
+PROFILE
+========================= */
+
+
+.profile-card{
+
+text-align:center;
+
+}
+
+
+
+.profile-picture{
+
+width:150px;
+
+height:150px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+border:4px solid #111;
+
+margin-bottom:15px;
+
+}
+
+
+
+#bioInput{
+
+width:100%;
+
+height:90px;
+
+padding:15px;
+
+border-radius:20px;
+
+border:2px solid #111;
+
+resize:none;
+
+font-family:Inter;
+
+margin-bottom:15px;
+
+}
+
+
+
+
+
+.social-stats{
+
+display:flex;
+
+justify-content:space-between;
+
+text-align:center;
+
+}
+
+
+
+.social-stats h3{
+
+font-size:25px;
+
+}
+
+
+
+
+
+
+/* =========================
+FEED
+========================= */
+
+
+.create{
+
+width:100%;
+
+margin-bottom:20px;
+
+}
+
+
+
+.video-post{
+
+height:600px;
+
+background:#000;
+
+position:relative;
+
+}
+
+
+
+.video-post video{
+
+width:100%;
+
+height:100%;
+
+object-fit:cover;
+
+}
+
+
+
+
+
+
+/* =========================
+LEADERBOARD
+========================= */
+
+
+.rank-card{
+
+font-size:22px;
+
+font-weight:900;
+
+}
+
+
+
+
+
+
+/* =========================
+POPUPS
+========================= */
+
+
+.popup{
+
+display:none;
+
+position:fixed;
+
+inset:0;
+
+background:rgba(0,0,0,.7);
+
+justify-content:center;
+
+align-items:center;
+
+z-index:1000;
+
+}
+
+
+
+.popup-box{
+
+width:330px;
+
+background:#fff8e8;
+
+border:3px solid #111;
+
+border-radius:25px;
+
+padding:30px;
+
+}
+
+
+
+.popup input,
+.popup select{
+
+width:100%;
+
+padding:15px;
+
+margin-bottom:15px;
+
+border-radius:15px;
+
+border:2px solid #111;
+
+font-size:15px;
+
+}
+
+
+
+
+
+
+/* =========================
+BOTTOM NAV
+========================= */
+
+
+.bottom-nav{
+
+position:fixed;
+
+bottom:0;
+
+left:50%;
+
+transform:translateX(-50%);
+
+width:100%;
+
+max-width:390px;
+
+height:75px;
+
+background:#111;
+
+display:flex;
+
+justify-content:space-around;
+
+align-items:center;
+
+z-index:500;
+
+}
+
+
+
+.bottom-nav button{
+
+background:none;
+
+padding:5px;
+
+font-size:20px;
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+}
+
+
+
+.bottom-nav span{
+
+font-size:10px;
+
+}
+
+
+
+.create-button{
+
+background:#456b4d!important;
+
+width:55px;
+
+height:55px;
+
+border-radius:50%;
+
+font-size:35px!important;
+
+}
+
+
+
+
+
+
+/* =========================
+LOADING
+========================= */
+
+
+#loadingScreen{
+
+position:fixed;
+
+inset:0;
+
+background:#efe4c8;
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:center;
+
+align-items:center;
+
+z-index:2000;
+
+}
+
+
+
+#loadingScreen h1{
+
+font-family:Anton;
+
+font-size:90px;
+
+}
+
+
+
+#loadingScreen p{
+
+font-weight:900;
+
+color:#456b4d;
+
+}
+
+
+
+
+
+/* =========================
+MOBILE
+========================= */
+
+
+@media(max-width:400px){
+
+
+.app{
+
+padding:15px;
+
+}
+
+
+
+header h1{
+
+font-size:60px;
+
+}
+
+
+
+h2{
+
+font-size:38px;
+
+}
+
+
+}
+
+.rank-profile-picture{
+
+width:70px;
+
+height:70px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+}
+
+.tfy-logo{
+
+width:140px;
+
+height:140px;
+
+object-fit:contain;
+
+margin:auto;
+
+display:block;
+
+}
+
+
+#guestWelcome{
+
+text-align:center;
+
+padding:40px 20px;
+
+}
+
+
+#guestWelcome h1{
+
+font-size:40px;
+
+margin-top:20px;
+
+}
+
+#guestScreen{
+
+display:none;
+
+text-align:center;
+
+padding:70px 30px;
+
+}
+
+.guest-logo{
+
+position:absolute;
+
+top:25px;
+
+right:25px;
+
+width:80px;
+
+height:auto;
+
+background:transparent;
+
+}
+
+#guestScreen h1{
+
+font-size:42px;
+
+margin-top:80px;
+
+margin-bottom:25px;
+
+}
+
+#guestScreen p{
+
+font-size:20px;
+
+margin:10px 0;
+
+color:#333;
+
+}
+
+#guestScreen button{
+
+margin-top:35px;
+
+padding:15px 30px;
+
+font-size:18px;
+
+border:none;
+
+border-radius:14px;
+
+cursor:pointer;
+
+}
