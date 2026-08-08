@@ -127,6 +127,39 @@ CANCEL
 </div>
 
 
+<!-- CREATE POST POPUP -->
+<div id="postPopup">
+   ...
+</div>
+
+
+<!-- COMMENT POPUP -->
+<div id="commentPopup" class="popup" style="display:none;">
+
+<div class="card">
+
+<h3>Comments</h3>
+
+<div id="commentList"></div>
+
+<textarea
+id="commentText"
+placeholder="Write a comment..."
+></textarea>
+
+<button onclick="sendComment()">
+Post Comment
+</button>
+
+<button onclick="closeComments()">
+Close
+</button>
+
+</div>
+
+</div>
+
+
 
 
 
@@ -282,7 +315,7 @@ Guest
 
 
 <p>
-No brainrot - Build yourself.
+Dead Scroll. Build yourself.
 </p>
 
 
@@ -542,16 +575,11 @@ onclick="openPost()">
 </button>
 
 
-
-
-
 <div id="videoFeed">
 
+</div>
 
-<!-- Posts load here from Firebase -->
 
-
-<div class="card empty-feed">
 
 
  
@@ -560,10 +588,10 @@ onclick="openPost()">
  
 
 
-</div>
+ 
 
 
-</div>
+ 
 
 
 
@@ -687,9 +715,7 @@ type="file"
 
 accept="image/*"
 
-hidden
-
->
+hidden>
 
 
 
@@ -705,7 +731,7 @@ onclick="document.getElementById('profileUpload').click()"
 
 >
 
-📷 Change Picture
+ Change Picture
 
 </button>
 
@@ -747,15 +773,24 @@ placeholder="Tell the community about yourself..."
 
 
 
-<button
-
+ <button
 onclick="updateProfile()"
-
 class="saveProfile"
-
 >
-
 SAVE PROFILE
+</button>
+
+<div class="card">
+
+<h3>
+Posts
+</h3>
+
+<div id="profilePosts">
+
+</div>
+
+</div>
 
 </button>
 
@@ -780,63 +815,37 @@ SAVE PROFILE
 
 
 
-<div class="stats">
-
-
+ <div class="stats">
 
 <div>
-
-<h3 id="profileLevel">
-
-1
-
-</h3>
-
-<p>
-LEVEL
-</p>
-
+<h3 id="profileFollowers">0</h3>
+<p>FOLLOWERS</p>
 </div>
-
-
-
-
 
 <div>
-
-<h3 id="profileXP">
-
-0
-
-</h3>
-
-<p>
-XP
-</p>
-
+<h3 id="profileFollowing">0</h3>
+<p>FOLLOWING</p>
 </div>
-
-
-
-
 
 <div>
+<h3 id="profileLevel">1</h3>
+<p>LEVEL</p>
+</div>
 
-<h3 id="profileStreak">
+<div>
+<h3 id="profileXP">0</h3>
+<p>XP</p>
+</div>
 
-0
-
-</h3>
-
-<p>
-STREAK
-</p>
+<div>
+<h3 id="profileStreak">0</h3>
+<p>STREAK</p>
+</div>
 
 </div>
 
 
 
-</div>
 
 
 
@@ -961,26 +970,7 @@ No achievements yet.
 <!-- PROFILE POSTS -->
 
 
-<div class="card">
-
-
-<h3>
-Your Posts
-</h3>
-
-
-
-<div id="profilePosts">
-
-
-No posts yet.
-
-
-</div>
-
-
-
-</div>
+ 
 
 
 
@@ -1042,7 +1032,7 @@ BOTTOM APP NAV (MOBILE)
 
 <button onclick="openPage('home')">
 
-🏠
+
 
 <span>
 Home
@@ -1056,7 +1046,7 @@ Home
 
 <button onclick="openPage('feed')">
 
-🔥
+
 
 <span>
 Feed
@@ -1081,7 +1071,7 @@ class="create-button">
 
 <button onclick="openPage('rank')">
 
-🏆
+
 
 <span>
 Rank
@@ -1095,7 +1085,7 @@ Rank
 
 <button onclick="openPage('profile')">
 
-👤
+
 
 <span>
 Profile
