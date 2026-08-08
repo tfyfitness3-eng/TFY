@@ -23,9 +23,15 @@ from
 
 
 
-  import {
+    import {
 doc,
 setDoc,
+getDoc,
+updateDoc,
+increment,
+arrayUnion,
+arrayRemove,
+addDoc,
 collection,
 query,
 where,
@@ -175,31 +181,23 @@ workouts:[
 
   onAuthStateChanged(auth, (user)=>{
 
-const guest =
-document.getElementById("guestScreen");
-
 if(user){
-
 currentUser = user;
-
-if(guest) guest.style.display = "none";
-
 loadProfile();
-
 }
 else{
-
 currentUser = null;
-
-if(guest) guest.style.display = "block";
-
 }
 
 updateUI();
 
+loadLeaderboard();
+
+loadFeed();
+
 hideLoading();
 
-loadLeaderboard();
+loadProfilePosts();
 
 });
 
@@ -865,7 +863,7 @@ player.streak + " Day Streak",
 
 player.streak +
 
-" days 🔥"
+" days "
 
 );
 
@@ -874,7 +872,7 @@ player.streak +
 
 alert(
 
-"🔥 STREAK REWARD!\n+" +
+" STREAK REWARD!\n+" +
 
 reward +
 
@@ -1056,8 +1054,8 @@ homeUsername:
 player.username,
 
 
-xp:
-player.xp,
+ xp:
+player.totalXP,
 
 
 homeLevel:
@@ -1072,8 +1070,8 @@ profileUsername:
 player.username,
 
 
-profileXP:
-player.xp,
+ profileXP:
+player.totalXP,
 
 
 profileLevel:
@@ -1491,6 +1489,252 @@ rank++;
 
 }
 
+
+// ============================
+// LOAD FEED
+// ============================
+
+ function loadFeed(){
+
+const feed = document.getElementById("videoFeed");
+
+if(!feed) return;
+
+
+const q = query(
+collection(db,"posts"),
+orderBy("createdAt","desc")
+);
+
+
+onSnapshot(q,(snapshot)=>{
+
+
+feed.innerHTML = "";
+
+
+snapshot.forEach((post)=>{
+
+
+const data = post.data();
+
+
+feed.innerHTML += `
+
+<div class="card post-card">
+
+
+<div class="post-header">
+
+<img
+class="profile-picture"
+src="${data.profilePic || 'https://placehold.co/50x50?text=TFY'}"
+>
+
+<h3>
+${data.username}
+</h3>
+
+</div>
+
+
+<p>
+${data.caption}
+</p>
+
+
+<div class="post-actions">
+
+
+<button onclick="likePost('${post.id}')">
+❤️ ${data.likes || 0}
+</button>
+
+
+ <button onclick="openComments('${post.id}')">
+💬 Comment
+</button>
+
+
+<button onclick="sharePost('${data.caption}')">
+↗ Share
+</button>
+
+
+</div>
+
+
+</div>
+
+`;
+
+});
+
+
+});
+
+
+}
+
+
+ // ============================
+// LIKE POST + GIVE XP
+// ============================
+
+  window.likePost = async function(postID){
+
+const postRef = doc(db,"posts",postID);
+
+const postSnap = await getDoc(postRef);
+
+if(!postSnap.exists()) return;
+
+const postData = postSnap.data();
+
+const likedBy = postData.likedBy || [];
+
+const alreadyLiked = likedBy.includes(currentUser.uid);
+
+if(alreadyLiked){
+
+await updateDoc(postRef,{
+likes: increment(-1),
+likedBy: arrayRemove(currentUser.uid)
+});
+
+await updateDoc(
+doc(db,"users",postData.userID),
+{
+xp: increment(-1),
+totalXP: increment(-1)
+}
+);
+
+}else{
+
+await updateDoc(postRef,{
+likes: increment(1),
+likedBy: arrayUnion(currentUser.uid)
+});
+
+await updateDoc(
+doc(db,"users",postData.userID),
+{
+xp: increment(1),
+totalXP: increment(1)
+}
+);
+
+}
+
+};
+
+ 
+
+
+// ============================
+// LOAD PROFILE POSTS
+// ============================
+
+function loadProfilePosts(){
+
+const box =
+document.getElementById("profilePosts");
+
+
+if(!box) return;
+
+
+if(!currentUser) return;
+
+
+const q = query(
+
+collection(db,"posts"),
+
+orderBy(
+"createdAt",
+"desc"
+)
+
+);
+
+
+onSnapshot(q,(snapshot)=>{
+
+
+box.innerHTML="";
+
+
+snapshot.forEach(post=>{
+
+
+const data = post.data();
+
+
+if(data.userID === currentUser.uid){
+
+
+box.innerHTML += `
+
+<div class="card post-card">
+
+<h3>
+${data.username}
+</h3>
+
+
+<p>
+${data.caption}
+</p>
+
+
+   <button onclick="alert('LIKE BUTTON WORKS')">
+❤️ ${data.likes || 0}
+</button>
+
+
+</div>
+
+`;
+
+}
+
+
+});
+
+
+});
+
+}
+
+
+
+function sharePost(text){
+
+if(navigator.share){
+
+navigator.share({
+
+title:"TFY Workout",
+
+text:
+"Check out my workout on TFY. Think For Yourself"
+
+});
+
+}
+
+else{
+
+alert(
+"Share your TFY workout"
+);
+
+}
+
+}
+
 // ============================
 // POST POPUP FUNCTIONS
 // ============================
@@ -1529,6 +1773,153 @@ if(popup){
 popup.style.display="none";
 
 }
+
+
+}
+
+
+
+// ============================
+// COMMENTS
+// ============================
+
+
+console.log("COMMENTS LOADED");
+
+let currentCommentPost = null;
+
+window.openComments = function(postID){
+
+currentCommentPost = postID;
+
+const popup = document.getElementById("commentPopup");
+
+if(popup){
+popup.style.display = "flex";
+}
+
+loadComments(postID);
+
+};
+
+window.closeComments = function(){
+
+const popup = document.getElementById("commentPopup");
+
+if(popup){
+popup.style.display = "none";
+}
+
+currentCommentPost = null;
+
+};
+
+
+
+
+
+window.sendComment = async function(){
+
+
+if(!currentUser){
+
+alert("Login to comment");
+
+return;
+
+}
+
+
+const text = document.getElementById("commentText").value;
+
+
+if(!text.trim()) return;
+
+
+
+await addDoc(
+collection(db,"comments"),
+{
+
+postID: currentCommentPost,
+
+userID: currentUser.uid,
+
+username: player.username,
+
+text:text,
+
+createdAt: serverTimestamp()
+
+}
+
+);
+
+
+
+document.getElementById("commentText").value="";
+
+
+}
+
+
+
+
+
+
+ window.loadComments = function(postID){
+
+
+const box = document.getElementById("commentList");
+
+
+if(!box) return;
+
+
+
+const q = query(
+
+collection(db,"comments"),
+
+where("postID","==",postID),
+
+orderBy("createdAt","asc")
+
+);
+
+
+
+onSnapshot(q,(snapshot)=>{
+
+
+box.innerHTML="";
+
+
+snapshot.forEach((comment)=>{
+
+
+const data = comment.data();
+
+
+
+box.innerHTML += `
+
+<div class="comment">
+
+<b>${data.username}</b>
+
+<p>${data.text}</p>
+
+</div>
+
+`;
+
+
+
+});
+
+
+});
 
 
 }
@@ -1597,31 +1988,22 @@ URL.createObjectURL(file);
 
 
 
-
-
-
-
 // ============================
 // CREATE POST FOUNDATION
 // ============================
 
 
-async function createPost(){
-
+ async function createPost(){
 
 if(!currentUser){
-
 
 alert(
 "Login to create posts"
 );
 
-
 return;
 
-
 }
-
 
 
 const caption =
@@ -1630,72 +2012,40 @@ document.getElementById(
 ).value;
 
 
-
 if(!caption){
-
 
 alert(
 "Write something first"
 );
 
-
 return;
-
 
 }
 
 
-
-
-
-// Posts will connect to Firebase later
+ await addDoc(collection(db,"posts"),{
+    userID: currentUser.uid,
+    username: player.username,
+    caption: caption,
+    likes: 0,
+    likedBy: [],
+    createdAt: serverTimestamp()
+});
 
 
 alert(
-"Post system ready - Firebase posts coming next 🔥"
+"Workout posted"
 );
 
+
+document.getElementById(
+"postCaption"
+).value="";
 
 
 closePost();
 
-
 }
-
-
-
-
-
-
-
-
-
-// ============================
-// LOADING SCREEN
-// ============================
-
-
-function hideLoading(){
-
-
-const loading =
-document.getElementById(
-"loadingScreen"
-);
-
-
-
-if(loading){
-
-
-loading.style.display="none";
-
-
-}
-
-
-}
-
 
 
 
@@ -1720,6 +2070,26 @@ hideLoading();
 
 }
 );
+
+
+// ============================
+// LOADING SCREEN
+// ============================
+
+function hideLoading(){
+
+const loading =
+document.getElementById(
+"loadingScreen"
+);
+
+if(loading){
+
+loading.style.display="none";
+
+}
+
+}
 
 
 
@@ -1757,3 +2127,9 @@ window.closePost = closePost;
 
 
 window.createPost = createPost;
+
+
+console.log(typeof likePost);
+
+
+console.log(typeof openComments);
