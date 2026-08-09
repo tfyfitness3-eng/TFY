@@ -245,7 +245,7 @@ const taken = await usernameTaken(username);
 
 if(taken){
 
-alert("Username already taken 🔥");
+alert("Username already taken ");
 
 return;
 
@@ -1710,30 +1710,51 @@ ${data.caption}
 
 
 
-function sharePost(text){
+window.sharePost = async function(text){
 
-if(navigator.share){
+    const shareText =
+        "Check out this workout on TFYFitness!\n\n" +
+        text +
+        "\n\nThink For Yourself";
 
-navigator.share({
+    if(navigator.share){
 
-title:"TFY Workout",
+        try{
 
-text:
-"Check out my workout on TFY. Think For Yourself"
+            await navigator.share({
 
-});
+                title:"TFY Workout",
 
-}
+                text:shareText
 
-else{
+            });
 
-alert(
-"Share your TFY workout"
-);
+        }catch(error){
 
-}
+            // User closed the share menu
+            console.log("Share cancelled");
 
-}
+        }
+
+    }
+
+    else{
+
+        try{
+
+            await navigator.clipboard.writeText(shareText);
+
+            alert("Workout copied to clipboard!");
+
+        }catch(error){
+
+            alert("Share your TFY workout!");
+
+        }
+
+    }
+
+};
 
 // ============================
 // POST POPUP FUNCTIONS
