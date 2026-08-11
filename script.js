@@ -28,6 +28,7 @@ doc,
 setDoc,
 getDoc,
 updateDoc,
+deleteDoc,
 increment,
 arrayUnion,
 arrayRemove,
@@ -196,6 +197,10 @@ loadLeaderboard();
 loadFeed();
 
 hideLoading();
+
+loadProfilePosts();
+
+loadOwnFollowCounts();
 
 loadProfilePosts();
 
@@ -1242,6 +1247,329 @@ displayChallenge();
 }
 
 
+let viewedUserID = null;
+
+
+window.openUserProfile = async function(userID){
+
+    if(!userID) return;
+
+    viewedUserID = userID;
+
+    const userRef = doc(db,"users",userID);
+
+    const userSnap = await getDoc(userRef);
+
+    if(!userSnap.exists()){
+
+        alert("User not found.");
+
+        return;
+
+    }
+
+    const data = userSnap.data();
+
+    document.getElementById("viewUserProfileImage").src =
+        data.profilePic ||
+        "https://placehold.co/180x180?text=TFY";
+
+    document.getElementById("viewUserUsername").textContent =
+        data.username || "User";
+
+    document.getElementById("viewUserBio").textContent =
+        data.bio || "No bio yet.";
+
+    document.getElementById("viewUserFollowers").textContent =
+        data.followersCount || 0;
+
+    document.getElementById("viewUserFollowing").textContent =
+        data.followingCount || 0;
+
+
+    document.querySelectorAll(".page").forEach(page => {
+
+        page.classList.remove("active");
+
+    });
+
+
+    document.getElementById("userProfile").classList.add("active");
+
+    const followingRef = doc(
+    db,
+    "users",
+    currentUser.uid,
+    "following",
+    userID
+);
+
+const followingSnap = await getDoc(followingRef);
+
+const followButton =
+    document.getElementById("viewUserFollowButton");
+
+if(followButton){
+
+    followButton.textContent =
+        followingSnap.exists()
+        ? "Following"
+        : "Follow";
+
+}
+
+    loadViewedUserPosts(userID);
+
+    loadFollowCounts(userID);
+
+};
+
+
+window.closeUserProfile = function(){
+
+    viewedUserID = null;
+
+    document.querySelectorAll(".page").forEach(page => {
+
+        page.classList.remove("active");
+
+    });
+
+    document.getElementById("feed").classList.add("active");
+
+};
+
+
+
+
+
+window.toggleFollow = async function(){
+
+    if(!currentUser){
+
+        alert("Login to follow users.");
+
+        return;
+
+    }
+
+    if(!viewedUserID){
+
+        return;
+
+    }
+
+    if(currentUser.uid === viewedUserID){
+
+        return;
+
+    }
+
+    const followingRef = doc(
+        db,
+        "users",
+        currentUser.uid,
+        "following",
+        viewedUserID
+    );
+
+    const followerRef = doc(
+        db,
+        "users",
+        viewedUserID,
+        "followers",
+        currentUser.uid
+    );
+
+    const followingSnap = await getDoc(followingRef);
+
+    const button =
+        document.getElementById("viewUserFollowButton");
+
+    if(followingSnap.exists()){
+
+        await deleteDoc(followingRef);
+
+        await deleteDoc(followerRef);
+
+        button.textContent = "Follow";
+
+    }else{
+
+        await setDoc(followingRef,{
+
+            userID: viewedUserID,
+
+            createdAt: serverTimestamp()
+
+        });
+
+        await setDoc(followerRef,{
+
+            userID: currentUser.uid,
+
+            createdAt: serverTimestamp()
+
+        });
+
+        button.textContent = "Following";
+
+    }
+
+await loadFollowCounts(viewedUserID);
+
+};
+
+
+async function loadFollowCounts(userID){
+
+    const followersSnap = await getDocs(
+        collection(
+            db,
+            "users",
+            userID,
+            "followers"
+        )
+    );
+
+    const followingSnap = await getDocs(
+        collection(
+            db,
+            "users",
+            userID,
+            "following"
+        )
+    );
+
+    const followersElement =
+        document.getElementById("viewUserFollowers");
+
+    const followingElement =
+        document.getElementById("viewUserFollowing");
+
+    if(followersElement){
+
+        followersElement.textContent =
+            followersSnap.size;
+
+    }
+
+    if(followingElement){
+
+        followingElement.textContent =
+            followingSnap.size;
+
+    }
+
+}
+
+
+
+async function loadViewedUserPosts(userID){
+
+    const box =
+        document.getElementById("viewUserPosts");
+
+    if(!box) return;
+
+    const q = query(
+        collection(db,"posts"),
+        where("userID","==",userID),
+        orderBy("createdAt","desc")
+    );
+
+    onSnapshot(q,(snapshot)=>{
+
+        box.innerHTML = "";
+
+        snapshot.forEach((post)=>{
+
+            const data = post.data();
+
+            box.innerHTML += `
+
+                <div class="card post-card">
+
+                    <h3>
+                        ${data.username || "TFY Athlete"}
+                    </h3>
+
+                    <p>
+                        ${data.caption || ""}
+                    </p>
+
+                    <div class="post-actions">
+
+                        <button
+                            onclick="likePost('${post.id}')"
+                        >
+                            ❤️ ${data.likes || 0}
+                        </button>
+
+                        <button
+                            onclick="openComments('${post.id}')"
+                        >
+                            💬 Comment
+                        </button>
+
+                        <button
+                            onclick="sharePost('${data.caption || ""}')"
+                        >
+                            ↗ Share
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        });
+
+    });
+
+}
+
+
+
+async function loadOwnFollowCounts(){
+
+    if(!currentUser) return;
+
+    const followersSnap = await getDocs(
+        collection(
+            db,
+            "users",
+            currentUser.uid,
+            "followers"
+        )
+    );
+
+    const followingSnap = await getDocs(
+        collection(
+            db,
+            "users",
+            currentUser.uid,
+            "following"
+        )
+    );
+
+    const followers =
+        document.getElementById("profileFollowers");
+
+    const following =
+        document.getElementById("profileFollowing");
+
+    if(followers){
+        followers.textContent = followersSnap.size;
+    }
+
+    if(following){
+        following.textContent = followingSnap.size;
+    }
+
+}
+
 
 
 
@@ -1322,6 +1650,9 @@ tab.classList.add("active");
 
 
 }
+
+
+
 
 
 
@@ -1452,7 +1783,7 @@ board.innerHTML += `
 
 <div class="card rank-card">
 
- <img 
+<img
 src="${data.profilePic || 'https://placehold.co/80x80?text=TFY'}"
 class="rank-profile-picture"
 >
@@ -1509,30 +1840,35 @@ orderBy("createdAt","desc")
 
 onSnapshot(q,(snapshot)=>{
 
+  
 
 feed.innerHTML = "";
 
 
 snapshot.forEach((post)=>{
 
+  
 
 const data = post.data();
 
 
 feed.innerHTML += `
 
-<div class="card post-card">
+<div id="post-${post.id}" class="card post-card">
 
 
 <div class="post-header">
 
 <img
-class="profile-picture"
-src="${data.profilePic || 'https://placehold.co/50x50?text=TFY'}"
+src="${data.profilePic || 'https://placehold.co/80x80?text=TFY'}"
+class="rank-profile-picture"
 >
 
-<h3>
-${data.username}
+<h3
+    onclick="openUserProfile('${data.userID}')"
+    style="cursor:pointer;"
+>
+    ${data.username}
 </h3>
 
 </div>
@@ -1556,7 +1892,7 @@ ${data.caption}
 </button>
 
 
-<button onclick="sharePost('${data.caption}')">
+<button onclick="sharePost('${data.caption}', '${post.id}')">
 ↗ Share
 </button>
 
@@ -1564,15 +1900,43 @@ ${data.caption}
 </div>
 
 
-</div>
-
-`;
+</div>`;
 
 });
 
+openSharedPost();
 
 });
 
+}
+
+
+function openSharedPost(){
+
+    const params = new URLSearchParams(window.location.search);
+
+    const postID = params.get("post");
+
+    if(!postID) return;
+
+    const postElement = document.getElementById("post-" + postID);
+
+    if(postElement){
+
+        postElement.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+        postElement.style.outline = "3px solid #ffffff";
+
+        setTimeout(() => {
+
+            postElement.style.outline = "";
+
+        }, 3000);
+
+    }
 
 }
 
@@ -1580,10 +1944,19 @@ ${data.caption}
  // ============================
 // LIKE POST + GIVE XP
 // ============================
+window.likePost = async function(postID){
 
-  window.likePost = async function(postID){
+    if(!currentUser){
 
-const postRef = doc(db,"posts",postID);
+        alert(
+            "Login to join the TFY community and like workouts."
+        );
+
+        return;
+
+    }
+
+    const postRef = doc(db,"posts",postID);
 
 const postSnap = await getDoc(postRef);
 
@@ -1868,6 +2241,8 @@ userID: currentUser.uid,
 
 username: player.username,
 
+profilePic: player.profilePic || "",
+
 text:text,
 
 createdAt: serverTimestamp()
@@ -1927,9 +2302,24 @@ box.innerHTML += `
 
 <div class="comment">
 
+<img
+class="comment-profile-picture"
+src="${data.profilePic || 'https://placehold.co/40x40?text=TFY'}"
+>
+
+<div class="comment-content">
+
 <b>${data.username}</b>
 
 <p>${data.text}</p>
+
+${
+    currentUser && currentUser.uid === data.userID
+    ? `<button onclick="deleteComment('${comment.id}')">Delete</button>`
+    : ""
+}
+
+</div>
 
 </div>
 
@@ -1944,6 +2334,138 @@ box.innerHTML += `
 
 
 }
+
+
+window.deleteComment = async function(commentID){
+
+    if(!currentUser){
+
+        alert("Login required.");
+
+        return;
+
+    }
+
+    try{
+
+        const commentRef = doc(
+            db,
+            "comments",
+            commentID
+        );
+
+        const commentSnap = await getDoc(commentRef);
+
+        if(!commentSnap.exists()) return;
+
+        const data = commentSnap.data();
+
+        if(data.userID !== currentUser.uid){
+
+            alert("You can only delete your own comments.");
+
+            return;
+
+        }
+
+        await deleteDoc(commentRef);
+
+    }catch(error){
+
+        console.error("Error deleting comment:", error);
+
+        alert("Could not delete comment.");
+
+    }
+
+};
+
+
+window.openFollowList = async function(type){
+
+    if(!viewedUserID) return;
+
+    const list = document.getElementById("followList");
+    const content = document.getElementById("followListContent");
+    const title = document.getElementById("followListTitle");
+
+    if(!list || !content || !title) return;
+
+    list.style.display = "block";
+
+    title.textContent =
+        type === "followers"
+        ? "Followers"
+        : "Following";
+
+    content.innerHTML = "Loading...";
+
+    const q = collection(
+        db,
+        "users",
+        viewedUserID,
+        type
+    );
+
+    const snapshot = await getDocs(q);
+
+    content.innerHTML = "";
+
+    if(snapshot.empty){
+
+        content.innerHTML = "Nobody here yet.";
+
+        return;
+
+    }
+
+    for(const followDoc of snapshot.docs){
+
+        const userID = followDoc.id;
+
+        const userSnap = await getDoc(
+            doc(db,"users",userID)
+        );
+
+        if(!userSnap.exists()) continue;
+
+        const data = userSnap.data();
+
+        content.innerHTML += `
+
+            <div
+                class="follow-user"
+                onclick="openUserProfile('${userID}')"
+                style="cursor:pointer;"
+            >
+
+                <img
+                    class="comment-profile-picture"
+                    src="${data.profilePic || 'https://placehold.co/50x50?text=TFY'}"
+                >
+
+                <b>${data.username || "TFY Athlete"}</b>
+
+            </div>
+
+        `;
+
+    }
+
+};
+
+window.closeFollowList = function(){
+
+    const list =
+        document.getElementById("followList");
+
+    if(list){
+
+        list.style.display = "none";
+
+    }
+
+};
 
 
 
