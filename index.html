@@ -228,7 +228,15 @@ FEED
 
 </button>
 
+<button
+    id="adminButton"
+    onclick="openPage('admin'); loadAdminReports();"
+    style="display:none;"
+>
+    ADMIN
+</button>
 
+</button>
 
 <button 
 id="rankTab"
@@ -240,14 +248,12 @@ RANK
 
 
 
-<button 
-id="profileTab"
-onclick="openPage('profile')">
-
-PROFILE
-
+<button
+    id="profileTab"
+    onclick="openPage('profile')"
+>
+    PROFILE
 </button>
-
 
 </nav>
 
@@ -412,71 +418,171 @@ Level Progress
 
 
 
+<!-- PERSONALIZED WORKOUT -->
 
+<div class="card" id="workoutSetup">
 
+    <h3>
+        Build Your Workout
+    </h3>
 
-<!-- DAILY CHALLENGE -->
+    <p>
+        Tell TFY a little about your training.
+    </p>
 
+    <button onclick="openWorkoutSetup()">
+        Create My Workout
+    </button>
 
-<div class="card">
+</div>
 
+<div class="card" id="workoutSetupForm" style="display:none;">
 
-<h3>
-Today's Challenge
-</h3>
+    <h3>Workout Setup</h3>
 
+    <label>Age</label>
+    <input
+        type="number"
+        id="workoutAge"
+        min="13"
+        max="100"
+    >
 
+    <label>Goal</label>
+ <select id="workoutGoal">
 
-<div id="dailyChallenge">
+    <option value="">Choose a goal</option>
 
+    <option value="muscle">
+        Build Muscle
+    </option>
 
-<div class="exercise">
+    <option value="strength">
+        Build Strength
+    </option>
 
-Push Ups
+    <option value="fitness">
+        Get Fitter
+    </option>
 
-<b>
-20
-</b>
+    <option value="general">
+        Stay in Shape
+    </option>
+
+</select>
+
+   <label>Days you want to train</label>
+
+<div id="trainingDays">
+
+    <label>
+        <input type="checkbox" value="monday">
+        Monday
+    </label>
+
+    <label>
+        <input type="checkbox" value="tuesday">
+        Tuesday
+    </label>
+
+    <label>
+        <input type="checkbox" value="wednesday">
+        Wednesday
+    </label>
+
+    <label>
+        <input type="checkbox" value="thursday">
+        Thursday
+    </label>
+
+    <label>
+        <input type="checkbox" value="friday">
+        Friday
+    </label>
+
+    <label>
+        <input type="checkbox" value="saturday">
+        Saturday
+    </label>
+
+    <label>
+        <input type="checkbox" value="sunday">
+        Sunday
+    </label>
+
+</div>
+
+    <label>Workout time</label>
+    <select id="workoutTime">
+        <option value="20">20 minutes</option>
+        <option value="30">30 minutes</option>
+        <option value="45">45 minutes</option>
+        <option value="60">60 minutes</option>
+    </select>
+
+    <label>Equipment</label>
+    <select id="workoutEquipment">
+        <option value="none">No equipment</option>
+        <option value="dumbbells">Dumbbells</option>
+        <option value="gym">Gym equipment</option>
+        <option value="mixed">Multiple / mixed</option>
+    </select>
+
+    <label>Location</label>
+    <select id="workoutLocation">
+        <option value="">Choose a location</option>
+        <option value="home">Home</option>
+        <option value="gym">Gym</option>
+        <option value="outdoors">Outdoors</option>
+        <option value="mixed">Mixed</option>
+    </select>
+
+    <label>Experience</label>
+    <select id="workoutExperience">
+        <option value="">Choose experience</option>
+        <option value="beginner">Beginner</option>
+        <option value="intermediate">Intermediate</option>
+        <option value="advanced">Advanced</option>
+    </select>
+
+    <label>Limitations or safety concerns</label>
+    <select id="workoutLimitations">
+        <option value="none">None</option>
+        <option value="yes">I have something TFY should consider</option>
+    </select>
+
+    <label>Workout style</label>
+    <select id="workoutStyle">
+        <option value="">Choose a style</option>
+        <option value="strength">Strength</option>
+        <option value="bodyweight">Bodyweight / Calisthenics</option>
+        <option value="cardio">Cardio / Conditioning</option>
+        <option value="mixed">Mixed</option>
+    </select>
+
+    <p>
+        TFY is not a medical professional. Stop if an exercise causes pain.
+        If you have an injury, medical condition, or are unsure, talk to a
+        parent/guardian and an appropriate healthcare professional.
+    </p>
+
+    <button onclick="saveWorkoutPreferences()">
+        Save & Build My Workout
+    </button>
 
 </div>
 
 
-
-<div class="exercise">
-
-Dips
-
-<b>
-5
-</b>
-
+<!-- WEEKLY WORKOUT SCHEDULE -->
+<div class="card" id="todayWorkout">
 </div>
+<div class="card" id="weeklyWorkoutSchedule">
 
+    <h3>
+        This Week
+    </h3>
 
-
-<div class="exercise">
-
-Sit Ups
-
-<b>
-20
-</b>
-
-</div>
-
-
-
-</div>
-
-
-
-<button onclick="completeWorkout()">
-
-COMPLETE CHALLENGE
-
-</button>
-
-
+    <div id="weeklyScheduleList"></div>
 
 </div>
 
@@ -549,7 +655,15 @@ No achievements yet.
 
 
 
+<script>
+    if(typeof window.displayTodaysWorkout === "function"){
+        window.displayTodaysWorkout();
+    }
 
+    if(typeof window.displayWeeklyWorkoutSchedule === "function"){
+        window.displayWeeklyWorkoutSchedule();
+    }
+</script>
 </section>
 
 <!-- =========================
@@ -597,6 +711,16 @@ onclick="openPost()">
 
 
 </section>
+
+
+
+<button
+    onclick="openPage('notifications')"
+    class="notification-button"
+>
+    🔔
+    <span id="notificationCount">0</span>
+</button>
 
 
 
@@ -671,8 +795,8 @@ Keep training to climb the leaderboard.
 PROFILE PAGE
 ========================= -->
 
-
 <section id="profile" class="page">
+
 
 
 <h2>
@@ -713,9 +837,11 @@ id="profileUpload"
 
 type="file"
 
-accept="image/*"
+    accept="image/*,video/*"
 
 hidden>
+
+<p id="mediaUploadStatus"></p>
 
 
 
@@ -995,6 +1121,68 @@ No achievements yet.
 
 </div>
 
+
+<section id="search" class="page">
+
+    <h2>Search</h2>
+
+    <div class="search-box">
+
+        <input
+            id="userSearchInput"
+            type="text"
+            placeholder="Search users..."
+            oninput="searchUsers()"
+        >
+
+    </div>
+
+    <div id="userSearchResults"></div>
+
+    
+
+</section>
+
+
+<!-- =========================
+ADMIN PAGE
+========================= -->
+
+<section id="admin" class="page">
+
+    <h2>Admin Dashboard</h2>
+
+    <div class="card">
+
+        <h3>Reports</h3>
+
+        <div id="adminReports">
+
+            <p>Loading reports...</p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+NOTIFICATIONS PAGE
+========================= -->
+
+<section id="notifications" class="page">
+
+    <h2>Notifications</h2>
+
+    <div id="notificationList">
+
+        <p>No notifications yet.</p>
+
+    </div>
+
+</section>
+
 <!-- =========================
 LOADING SCREEN
 ========================= -->
@@ -1096,6 +1284,15 @@ Profile
 
 
 </div>
+
+
+<button
+    id="adminButton"
+ onclick="openPage('admin')"
+    style="display:none;"
+>
+    ADMIN
+</button>
 
 
 
