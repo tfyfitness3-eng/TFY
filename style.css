@@ -871,3 +871,211 @@ border-radius:14px;
 cursor:pointer;
 
 }
+
+
+/* ============================
+   PROFILE MOBILE FIX
+============================ */
+
+#profile {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+#profile .card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.profile-card {
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    max-width: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #111;
+    margin-bottom: 15px;
+}
+
+#bioInput {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.social-stats,
+.stats {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    text-align: center;
+}
+
+.stats > div,
+.social-stats > div {
+    min-width: 0;
+    flex: 1;
+}
+
+.stats h3,
+.social-stats h3 {
+    font-size: 20px;
+    margin: 5px 0;
+}
+
+.stats p,
+.social-stats p {
+    font-size: 11px;
+    margin: 0;
+}
+
+#profilePosts {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+
+/* FIX PROFILE STATS OVERFLOW */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.stats > div {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    overflow: hidden;
+}
+
+.stats h3 {
+    font-size: 18px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.stats p {
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+
+/* ============================
+   TFY FEED
+============================ */
+
+#videoFeed {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.post-card {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.post-header img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.post-header h3 {
+    margin: 0;
+}
+
+.post-card p {
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+}
+
+.post-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.post-actions button {
+    cursor: pointer;
+}
+
+
+.admin-report {
+    margin-bottom: 15px;
+    border: 2px solid #111;
+}
+
+.admin-report button {
+    margin: 5px;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+
+/* ============================
+   ADMIN DASHBOARD
+============================ */
+
+#admin {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+#adminSearchInput {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px;
+    border: 2px solid #111;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.admin-report,
+.admin-result {
+    margin-top: 12px;
+}
+
+.admin-report button,
+.admin-result button {
+    margin: 5px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+}
